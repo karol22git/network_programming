@@ -8,14 +8,16 @@
 #include <sys/socket.h>
 #include <string.h>
 #include <unistd.h>
+#include <pthread.h>
+
 #define PORT "5555"
 #define HOST "127.0.0.1"
-
+#define MAX_SIZE 64
 int height = 1;
 
-void service_incoming_messages(void* var) {
+void *service_incoming_messages(void* var) {
     struct pollfd* pfds = (struct pollfd*) var;
-    size_t buffer_size = 32;
+    size_t buffer_size = MAX_SIZE;
     char* buffer = malloc(buffer_size);
     int incoming_calls;
     int bytes_received;
@@ -25,18 +27,20 @@ void service_incoming_messages(void* var) {
         if(incoming_calls> 0) {
             bytes_received = recv(pfds[0].fd,buffer,buffer_size,0);
             if(bytes_received > 0) {
-                mvprintw(height-1,0,"%s ",buffer);
+                mvprintw(height,0,"%s ",buffer);
+                ++height;
+                move(height,0);
                 refresh();
                 //read messeges
             }
             else {
                 mvprintw(height-1,0,"Server is down!");
+                endwin();
                 exit(1);
             }
         }
 
     }
-    return;
 }
 
 int get_string_length(char* name) {
@@ -55,12 +59,10 @@ char* concat_string(char* username, char* message, int username_size, int messag
     strcat(result, "\0");
     return result;
 }
-void service_sending_messages(void* var) {
-    
-}
+
 
 int main(int argc, char* argv[]) {
-   int sock_fd;
+    int sock_fd;
     struct addrinfo hints, *serverinfo;
 
     hints.ai_family = AF_UNSPEC;
@@ -73,29 +75,36 @@ int main(int argc, char* argv[]) {
     
     struct pollfd pfds[1];
     pfds[0].fd = sock_fd;
-    pfds[0].events = POLLIN; 
-    size_t username_size = 32;
+    pfds[0].events = POLLIN;
+
+    //getting username
+    size_t username_size = MAX_SIZE;
     char* username = malloc(username_size);
     printf("Enter username: ");
     getline(&username,&username_size,stdin);
     int username_length = get_string_length(username);
     username[strcspn(username, "\n")] = 0;
-    initscr();
-    size_t size = 32;
+
+
+    size_t size = MAX_SIZE;
     char* line = malloc(size);
-    int message_length = 32; 
-    int msg[message_length];
+    //int message_length = ; 
+    int msg[MAX_SIZE];
     int index = 0;
     int tmp = 0;
-    move(height,0);
+
+    pthread_t thread_id ;
+    pthread_create(&thread_id,NULL,service_incoming_messages,&pfds);
+
+    initscr();
     refresh();
     for(;;) {
         tmp = getchar();
-        if(tmp == 13){
-           
-            
+        
+        //send message if user pressed ENTER
+        if(tmp == 13){ 
             char* result = concat_string(username, line, username_length,index);
-            send(sock_fd,result,message_length,0);
+            send(sock_fd,result,size,0);
             mvprintw(height,0,"%s", result);
             refresh();
             for(int i = 0 ; i < index; ++i) {
@@ -103,32 +112,34 @@ int main(int argc, char* argv[]) {
             }
             index = -1;
             ++height;
-            //send message
+            move(height,0);
+            refresh();
         }
+        //else just handle typing
         else {
-        if(tmp == 127 || tmp == 8) {
-            msg[index-1] = 0;
-            index = index -2;
-          for(int i = 0 ; i <= index; ++i) {
-            line[i] = msg[i]; 
-        }
-            line[index+1] = '\0';
-            clrtoeol();
-            //delete char
-        }
-        //copying from integer array to char array
-        else {
-            msg[index] = tmp;
-            for(int i = 0 ; i <= index; ++i) {
-                line[i] = msg[i]; 
+            //if user typed BACKSPACE
+            if(tmp == 127 || tmp == 8) {
+                msg[index-1] = 0;
+                index = index -2;
+                for(int i = 0 ; i <= index; ++i) {
+                    line[i] = msg[i]; 
+                }
+                line[index+1] = '\0';
+                clrtoeol();
             }
- 
-        }
+        //copying from integer array to char array
+            else {
+                msg[index] = tmp;
+                for(int i = 0 ; i <= index; ++i) {
+                    line[i] = msg[i]; 
+                }
+            }
         }
         mvprintw(height,0,"%s",line);
         refresh();
         ++index;
     }
     endwin();
+    pthread_join(thread_id,NULL);
     return 0;
 }

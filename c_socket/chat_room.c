@@ -11,6 +11,7 @@
 
 #define PORT "5555"
 #define MAX_QUE 15
+#define MAX_SIZE 64
 
 int main(int argc, char* argv[]) {
     int sockfd, new_fd, listener;
@@ -30,17 +31,20 @@ int main(int argc, char* argv[]) {
     listener = socket(serverinfo->ai_family, serverinfo->ai_socktype, serverinfo->ai_protocol);
     bind(listener, serverinfo->ai_addr, serverinfo->ai_addrlen);
     listen(listener,MAX_QUE);
+
+
     fd_count = 0 ;
     fd_size = 2 ;
     struct pollfd *pfds= malloc(sizeof(*pfds)*fd_size);
-    size_t bufsize = 32;
+    size_t bufsize = MAX_SIZE;
     char* buf  = malloc(bufsize);
+
+
     pfds[0].fd = listener;
     pfds[0].events = POLLIN;
     ++fd_count;
     while(1) {
         int poll_count = poll(pfds,fd_count,500);
-        //printf("tutaj \n");
         if(poll_count == - 1) {
             exit(1);
         }
@@ -60,19 +64,24 @@ int main(int argc, char* argv[]) {
                         pfds[fd_count].fd = new_fd;
                         pfds[fd_count].events = POLLIN;
                         ++fd_count;
-                        printf("Adding another descriptor to list. \n");
+                        printf("LOG: adding descriptor %d to list. \n",new_fd);
                     }
                 }
                 else {
                     int bytes = recv(pfds[i].fd,buf,bufsize,0);
+                    printf("LOG: i received message from %d \n",pfds[i].fd);
                     if(bytes <= 0) {
-                        printf("connection on socked %d closed. \n",pfds[i].fd);
+                        printf("LOG: connection on socked %d closed. \n",pfds[i].fd);
                         close(pfds[i].fd);
                         pfds[i]  = pfds[fd_count - 1];
                         fd_count = fd_count - 1;
                     }
                     else {
-                        printf("%s \n",buf);
+                        for(int j = 0 ; j < fd_count ; ++j) {
+                            if(j != i && pfds[j].fd != listener) {
+                                send(pfds[j].fd, buf, bufsize,0);
+                            }
+                        }
                     }
                 
                 }
