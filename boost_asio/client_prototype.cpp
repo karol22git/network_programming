@@ -3,17 +3,12 @@
 #include <string>
 #include <boost/asio.hpp>
 #include <boost/bind/bind.hpp>
+#include <utility>
 //#include "boost/bind.hpp"
 using boost::asio::ip::tcp;
 
-
-void send_message(const boost::system::error_code& errorcode,size_t bytes_transferred, std::string message, int n) {
-
-}
-
-void siema(const boost::system::error_code& errorcode, size_t bytes_transferred) {
-
-}
+#define HEADER_SIZE 5
+#define MAX_MESSAGE_SIZE 512
 
 std::string padding(std::string word, int how_many_zeros) {
     std::string zero = "0";
@@ -23,20 +18,54 @@ std::string padding(std::string word, int how_many_zeros) {
     return zero.append(word);
 }
 
-void send_header(std::string message,  tcp::socket fd) {
-    boost::system::error_code error;
-    std::string message_length = std::to_string(message.length());
-    std::string header = padding(message_length,5 - message_length.length());
-   // boost::asio::write(fd,boost::asio::buffer(message,10),error);
-    boost::asio::async_write(fd,boost::asio::buffer(header,header.length()),
-   //boost::bind(siema,boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred));
-   // boost::bind(&send_message,std::placeholders::_1,std::placeholders::_2)(message,fd));//,
-    boost::bind(send_message, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred, message, 2));
-}
+class Client {
+    public:
+        Client(boost::asio::io_service &io_service) : fd(io_service) {}
+        void send_header(std::string message) {
+            boost::system::error_code error;
+            std::string message_length = std::to_string(message.length());
+            std::string header = padding(message_length,HEADER_SIZE - message_length.length());
+            boost::asio::async_write(fd,boost::asio::buffer(header,header.length()),
+            boost::bind(&Client::send_body, this, std::ref(message)));
+        }
+        tcp::socket& socket() {
+            return fd;
+        }
+    private:
+        void send_body(std::string message) {
+            boost::asio::async_write(fd,boost::asio::buffer(message,message.length()),
+            boost::bind(&Client::handler_placeholder, this));
+        }
 
-void send_message(std::string message, const tcp::socket &fd) {
-   // boost::asio::async_write(fd,boost::asio::buffer(message,message.length()));
-}
+        void handler_placeholder() {
+        }
+        
+        void receive() {
+            std::array<char, HEADER_SIZE> header;
+            boost::asio::async_read(fd,boost::asio::buffer(header, HEADER_SIZE),
+            boost::bind(&Client::receive_body,this, std::ref(header)));
+        }
+
+        void receive_body(std::array<char, HEADER_SIZE> header) {
+            int message_size = std::atoi(header.data());
+            if ( message_size <= 0 ) {
+                receive();
+                return;
+            }
+            std::array<char, MAX_MESSAGE_SIZE> message;
+            boost::asio::async_read(fd, boost::asio::buffer(message,message_size),
+            boost::bind(&Client::handle_message,this,std::ref(message),message_size));
+        }
+
+        void handle_message(std::array<char, MAX_MESSAGE_SIZE> message, int message_size) {
+            std::cout.write(message.data(),message_size);
+            std::cout<<std::endl;
+            std::flush(std::cout);
+            receive();
+        }
+
+    tcp::socket fd;
+};
 
 int main (int argc, char* argv[]) {
     if(argc != 3) {
@@ -47,9 +76,8 @@ int main (int argc, char* argv[]) {
         boost::asio::io_context io_context;
         tcp::resolver resolver(io_context);
         tcp::resolver::results_type endpoints = resolver.resolve(tcp::v4(), argv[1],argv[2]);
-        tcp::socket socket(io_context);
-        boost::asio::connect(socket,endpoints);
-
+        Client client (io_context);
+        boost::asio::connect(client.socket(),endpoints);
 
         for(;;) {
             std::string msg;
