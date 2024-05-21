@@ -4,6 +4,7 @@
 #include <boost/asio.hpp>
 #include <boost/bind/bind.hpp>
 #include <utility>
+#include <thread>
 //#include "boost/bind.hpp"
 using boost::asio::ip::tcp;
 
@@ -20,13 +21,24 @@ std::string padding(std::string word, int how_many_zeros) {
 
 class Client {
     public:
-        Client(boost::asio::io_service &io_service) : fd(io_service) {}
+        Client(boost::asio::io_service &io_service, const tcp::resolver::results_type& endpoints) : fd(io_service), io_context_(io_service) {
+            boost::asio::connect(fd,endpoints);
+        }
+
+        
+        void start() {
+            receive();
+        }
         void send_header(std::string message) {
             boost::system::error_code error;
+            std::string idk = message;
             std::string message_length = std::to_string(message.length());
             std::string header = padding(message_length,HEADER_SIZE - message_length.length());
-            boost::asio::async_write(fd,boost::asio::buffer(header,header.length()),
-            boost::bind(&Client::send_body, this, std::ref(message)));
+            std::cout<<header<<std::endl;
+            boost::asio::async_write(fd,boost::asio::buffer(header,HEADER_SIZE),
+            boost::bind(&Client::send_body, this, std::ref(idk)));
+            
+        io_context_.run_one();
         }
         tcp::socket& socket() {
             return fd;
@@ -38,6 +50,7 @@ class Client {
         }
 
         void handler_placeholder() {
+             
         }
         
         void receive() {
@@ -65,6 +78,7 @@ class Client {
         }
 
     tcp::socket fd;
+    boost::asio::io_context& io_context_;
 };
 
 int main (int argc, char* argv[]) {
@@ -76,16 +90,20 @@ int main (int argc, char* argv[]) {
         boost::asio::io_context io_context;
         tcp::resolver resolver(io_context);
         tcp::resolver::results_type endpoints = resolver.resolve(tcp::v4(), argv[1],argv[2]);
-        Client client (io_context);
-        boost::asio::connect(client.socket(),endpoints);
+        Client client (io_context,endpoints);
+        client.start();
+        boost::asio::executor_work_guard<boost::asio::io_context::executor_type> s= boost::asio::make_work_guard(io_context);
+        std::thread t([&io_context](){ io_context.run(); });
 
         for(;;) {
             std::string msg;
             std::cout<<"enter messge: ";
             std::getline(std::cin,msg);
-            std::string message_length = std::to_string(msg.length());
+            client.send_header(msg);
         }
+
     }
+    
     catch (std::exception &e) {
         std::cerr<<e.what()<<std::endl;
     }
