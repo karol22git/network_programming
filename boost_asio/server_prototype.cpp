@@ -1,5 +1,7 @@
 #include <list>
 #include <iostream>
+#include <string>
+
 #include <boost/asio.hpp>
 #include <boost/bind/bind.hpp>
 
@@ -14,14 +16,53 @@
 using boost::asio::ip::tcp;
 using namespace boost::placeholders;
 
+std::string padding(std::string word, int how_many_zeros) {
+    std::string zero = "0";
+    for (int i = 1 ; i < how_many_zeros ; ++i) {
+        zero.append("0");
+    }
+    return zero.append(word);
+}
+
 class Tcp_client {
     public:
-        Tcp_client(boost::asio::io_service &io_service) : fd(io_service){}
+        Tcp_client(boost::asio::io_service &io_service, int i) : fd(io_service){
+            id = i;
+        }
         tcp::socket& socket() {
             return fd;
         }
+        int get_id() {
+            return id;
+        }
+
+        void send(std::array<char, MAX_MESSAGE_SIZE> m,int message_size) {
+        std::cout<<"Data i will send: ";
+        std::cout.write(m.data(), message_size);
+        std::cout<<std::endl;
+        std::flush(std::cout);
+        message = m;
+            std::string header_int = std::to_string(message_size);
+            std::string header = padding(header_int,HEADER_SIZE - header_int.length());
+
+            boost::asio::async_write(fd, boost::asio::buffer(header, HEADER_SIZE),
+                boost::bind(&Tcp_client::send_body, this, message_size));
+        }
     private:
+    void send_body(int message_size) {
+        boost::asio::async_write(fd, boost::asio::buffer(message, message_size),
+            boost::bind(&Tcp_client::handler_placeholder, this,message_size));
+    }
+
+    void handler_placeholder(int message_size) {
+        std::cout<<"Data i have send: ";
+        std::cout.write(message.data(), message_size);
+        std::cout<<std::endl;
+        std::flush(std::cout);
+    }
         tcp::socket fd;
+        std::array<char, MAX_MESSAGE_SIZE> message;
+        int id;
 };
 
 class Chat_room {
@@ -39,6 +80,7 @@ class Chat_room {
 
         void handle_read(std::shared_ptr<Tcp_client> client, std::array<char, HEADER_SIZE> header) {
             int message_size = std::atoi(header.data());
+            //std::cout<<message_size<<std::endl;
             if ( message_size <= 0 ) {
                 start_accepting_messages(client);
                 return;
@@ -52,11 +94,35 @@ class Chat_room {
             std::cout.write(message.data(),message_size);
             std::cout<<std::endl;
             std::flush(std::cout);
+            send_message(message,message_size, client);
             start_accepting_messages(client);
         }
 
+        void send_message(std::array<char, MAX_MESSAGE_SIZE> message,int message_size, std::shared_ptr<Tcp_client> client) {
+            std::cout<<"number of chat members "<<chat_members.size()<<std::endl;
+            for(auto cm: chat_members) {
+                if(cm->get_id() != client->get_id()) {
+                    std::cout<<"id s: "<<cm->get_id()<<std::endl;
+                    cm->send(message, message_size);
+                }
+            }
+        }
+        
+        void handler_placeholder() {
+
+        }
+
+        void increment_id() {
+            ++next_id;
+        }
+
+        int get_next_id() {
+            return next_id;
+        }
+
     private:
-        std::list<std::shared_ptr<Tcp_client>> chat_members; 
+        std::list<std::shared_ptr<Tcp_client>> chat_members;
+        int next_id = 1;
 };
 
 class Tcp_server {
@@ -67,16 +133,22 @@ class Tcp_server {
 
     private:
         void start_accept() {
-            std::shared_ptr<Tcp_client> new_client = std::make_shared<Tcp_client>(GET_IO_SERVICE(acceptor_));
+            std::shared_ptr<Tcp_client> new_client = std::make_shared<Tcp_client>(GET_IO_SERVICE(acceptor_),room.get_next_id());
+            room.increment_id();
             acceptor_.async_accept(new_client->socket(),
             boost::bind(&Tcp_server::handle_accept,this, new_client,boost::asio::placeholders::error));
         }
 
         void handle_accept(std::shared_ptr<Tcp_client> client, const boost::system::error_code& e) {
             if(!e) {
+                boost::asio::async_write(client->socket(),boost::asio::buffer("hello",5),
+                boost::bind(&Tcp_server::handler_placeholder,this));
                 room.join_room(client);
             }
             start_accept();
+        }
+        void handler_placeholder() {
+
         }
         tcp::acceptor acceptor_;
         Chat_room room;
