@@ -1,0 +1,7 @@
+
+
+class HeaderGenerator {
+    public:
+        //Generate
+
+};

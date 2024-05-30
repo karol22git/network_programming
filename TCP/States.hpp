@@ -1,4 +1,4 @@
-enum States {
+enum State {
     LISTEN = 1,
     SYN_SENT,
     SYN_RECEIVED,
@@ -9,5 +9,5 @@ enum States {
     CLOSING,
     LAST_ACK,
     TIME_WAIT,
-    CLOSED = 1
+    CLOSED = 11
 };

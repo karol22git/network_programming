@@ -1,3 +1,5 @@
+#pragma once
+
 typedef short int _16bits;
 typedef int _32bits;
 
