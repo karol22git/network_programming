@@ -13,7 +13,6 @@ void Clock::Tick() {
 
 Clock::Clock() {
     tick_thread = std::thread(&Clock::Tick, this);
-    tick_thread.join();
 }
 
 int Clock::GetSequenceNumber() {

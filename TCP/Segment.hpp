@@ -1,9 +1,7 @@
 #pragma once
 #include "Header.hpp"
 
-
-class Segment {
-    private:
-        Header header;
-        int data;
+struct Segment {
+    Header header;
+    int data;
 };

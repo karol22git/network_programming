@@ -1,5 +1,6 @@
 #include "States.hpp"
-
+#include "DataTypes.hpp"
+#include "Datagram"
 struct TransmissionControlBlock {
     int snd_una,
         snd_nxt,
@@ -15,15 +16,24 @@ struct TransmissionControlBlock {
 };
 
 class Host {
-
+    public:
+        Host(std::string, _16bits);
+        void OpenForConnectionPassively();
+        void OpenForConnectionActively(std::string, _16bits);
+        void HandleDatagram(struct Datagram);
+        void SetState(States);
+        void FetchDataFromNetwork();
+        void CheckForReceivedData();
     private:
-
-        void send();
-        void receive();
         const std::string ip;
-        const std::string port;
+        _16bits port;
         std::thread sender;
         std::thread receiver;
-        std::shared_ptr<Connection> endpoint;
-        State state;
+        bool isConnectionEstablished = false;
+        std::shared_ptr<Network> endpoint;
+        std::list<Segment> connection;
+        std::queue<struct Datagram> datagrams;
+
+        SegmentGenerator *generator;
+        States state = States::CLOSED;
 }

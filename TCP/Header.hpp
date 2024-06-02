@@ -1,8 +1,14 @@
 #pragma once
 #include "DataTypes.hpp"
-
+#include "Flags.hpp"
 class Header {
-
+    public:
+        Header(_16bits source, _16bits destination);
+        _32bits GetSequenceNumber();
+        _32bits GetAcknowledgmentNumber();
+        _16bits GetSourcePort();
+        _16bits GetDestinationPort();
+        void SetFlag(Flags)
     private:
         _32bits sequence_number;
         _32bits acknowledgment_number;

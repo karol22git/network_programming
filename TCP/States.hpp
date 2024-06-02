@@ -1,4 +1,4 @@
-enum State {
+enum States {
     LISTEN = 1,
     SYN_SENT,
     SYN_RECEIVED,
