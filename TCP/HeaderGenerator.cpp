@@ -14,7 +14,7 @@ std::shared_ptr<Header> HeaderGenerator::GenerateSynHeader(_16bits source_port, 
 
 std::shared_ptr<Header> HeaderGenerator::GenerateSynAckHeader(_16bits source_port, _16bits destination_port) {
     std::shared_ptr<Header> synack = std::make_shared<Header>(source_port,destination_port);
-    syn->SetFlag(Flags::ack);
+    synack->SetFlag(Flags::ack);
     synack->SetFlag(Flags::syn)
     return synack;
 }

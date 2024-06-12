@@ -7,17 +7,18 @@ void Host::SetState(States newState) {
 
 void Host::OpenForConnectionPassively() {
     SetState(States::LISTEN);
-    for(;;) {
-        receiver = std::thread(&Host::FetchDataFromNetwork,this);
-        std::this_thread::sleep_for(std::chrono::milliseconds(250));
-        CheckForReceivedData();
-    }
+    receiver = std::thread(&Host::FetchDataFromNetwork,this);
 }
 
 void Host::FetchDataFromNetwork() {
-    struct Datagram fetchedDatagram = endpoint.GetDatagram(ip);
-    if(fetchedDatagram != nullptr) {
-        datagrams.pushback(fetchedDatagram);
+    struct Datagram fetchedDatagram;// = endpoint.GetDatagram(ip);
+    for(;;) {
+        fetchedDatagram = endpoint.Fetch(ip);
+        if(fetchedDatagram != nullptr) {
+            datagrams.pushback(fetchedDatagram);
+        }
+        CheckForReceivedData();
+        std::this_thread::sleep_for(std::chrono::milliseconds(250));
     }
 }
 
@@ -34,4 +35,13 @@ void Host::ProceedDatagram(struct Datagram datagarm) {
     else {
         ProceedThreeWayHandshake(datagram);
     }
+}
+
+void Host::ProceedThreeWayHandshake(struct Datagram datagram) {
+
+}
+
+
+void Host::OpenForConnectionActively(std::string ip, _16bits destination_port) {
+    
 }

@@ -1,6 +1,6 @@
 #include "States.hpp"
 #include "DataTypes.hpp"
-#include "Datagram"
+#include "Datagram.hpp"
 struct TransmissionControlBlock {
     int snd_una,
         snd_nxt,
@@ -24,6 +24,7 @@ class Host {
         void SetState(States);
         void FetchDataFromNetwork();
         void CheckForReceivedData();
+        void ProceedThreeWayHandshake();
     private:
         const std::string ip;
         _16bits port;

@@ -54,3 +54,25 @@ Header::Header( _16bits source, _16bits destination ) {
     reserved.c = 0;
     reserved.d = 0;
 }
+
+Header::Header(_32bits _sequence_number) {
+    sequence_number = _sequence_number;
+}
+
+
+_32bits Header::GetSequenceNumber() {
+    return sequence_number;
+}
+
+_32bits Header::GetAcknowledgmentNumber() {
+    return acknowledgment_number;
+}
+
+
+_16bits Header::GetSourcePort() {
+    return source_port;
+}
+
+_16bits Header::GetDestinationPort() {
+    return destination_port;
+}

@@ -2,6 +2,7 @@
 #include "Header.hpp"
 
 struct Segment {
-    Header header;
+    Header* header;
     int data;
+    
 };
