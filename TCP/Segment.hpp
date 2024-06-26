@@ -2,7 +2,7 @@
 #include "Header.hpp"
 
 struct Segment {
-    Header* header;
+    std::shared_ptr<Header> header;
     int data;
     
 };

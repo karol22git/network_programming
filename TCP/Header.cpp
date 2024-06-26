@@ -23,18 +23,17 @@ void Header::SetFlag(Flags flag) {
             break;
     }
 }
-Header::Header( _16bits source, _16bits destination ) {
 
-    source_port = source;
-    destination_port = destination;
-
+Header::Header() {
+    source_port = 0;
+    destination_port = 0;
     sequence_number = 0;
     acknowledgment_number = 0;
     data = 0;
     options = 0;
     checksum = 0;
     urgent_pointer = 0;
-    window = 0;
+    window_size = 0;
     flags.cwr = 0;
     flags.ece = 0;
     flags.urg = 0;
@@ -53,6 +52,12 @@ Header::Header( _16bits source, _16bits destination ) {
     reserved.b = 0;
     reserved.c = 0;
     reserved.d = 0;
+}
+Header::Header( _16bits source, _16bits destination ) {
+    Header();
+    source_port = source;
+    destination_port = destination;
+
 }
 
 Header::Header(_32bits _sequence_number) {
@@ -75,4 +80,44 @@ _16bits Header::GetSourcePort() {
 
 _16bits Header::GetDestinationPort() {
     return destination_port;
+}
+
+_4bits Header::GetDataOffset() {
+    return data_offset;
+}
+
+_4bits Header::GetReserved() {
+    return reserved;
+}
+
+_8bits Header::GetFlags() {
+    return flags;
+}
+
+_16bits Header::GetWindowSize() {
+    return window_size;
+}
+
+_16bits Header::GetChecksum() {
+    return checksum;
+}
+
+_16bits Header::GetUrgentPointer() {
+    return urgent_pointer;
+}
+
+_32bits Header::GetOptions() {
+    return options;
+}
+
+void Header::SetSourcePort(_16bits sourcePort) {
+    source_port = sourcePort;
+}
+
+void Header::SetDestinationPort(_16bits destinationPort) {
+    destination_port = destinationPort;
+}
+
+void Header::SetSequenceNumber(_32bits sequenceNumber) {
+    sequence_number = sequenceNumber;
 }

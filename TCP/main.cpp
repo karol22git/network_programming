@@ -11,7 +11,8 @@ int main(int argc, char* argv[]) {
     //new_datagram.segment = ;
     struct Segment new_segment;
     new_segment.data = 100;
-    Header* h =  new Header(128);
+    //Header* h =  new Header(128);
+    std::shared_ptr<Header> h = std::make_shared<Header>(128);
     new_segment.header = h;
     new_datagram.segment = new_segment;
 

@@ -1,0 +1,11 @@
+source port: 0
+destination port: 0
+sequence number: 128
+acknowledgment number: 0
+data offset: 0000
+reserved: 0000
+flags: 00000000
+window size: 0
+checksum: 0
+urgent pointer: 0
+options: 0

@@ -13,6 +13,7 @@ class Network {
         void Post(struct Datagram);
         struct Datagram Fetch(std::string);
     private:
+        struct Datagram ParseDatagram(std::string);
         std::list<struct Datagram> bytestream;
         static std::shared_ptr<Network> network_;// = nullptr;
 };

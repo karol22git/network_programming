@@ -5,12 +5,22 @@ class Header {
     public:
         Header(_16bits source, _16bits destination);
         Header(_32bits);
-        Header(){};
+        Header();
         _32bits GetSequenceNumber();
         _32bits GetAcknowledgmentNumber();
         _16bits GetSourcePort();
         _16bits GetDestinationPort();
+        _4bits GetDataOffset();
+        _4bits GetReserved();
+        _8bits GetFlags();
+        _16bits GetWindowSize();
+        _16bits GetChecksum();
+        _16bits GetUrgentPointer();
+        _32bits GetOptions();
         void SetFlag(Flags);
+        void SetSourcePort(_16bits);
+        void SetDestinationPort(_16bits);
+        void SetSequenceNumber(_32bits);
     private:
         _32bits sequence_number;
         _32bits acknowledgment_number;
@@ -21,7 +31,7 @@ class Header {
         _16bits destination_port;
         _16bits checksum;
         _16bits urgent_pointer;
-        _16bits window;
+        _16bits window_size;
         
         _8bits flags;
 
