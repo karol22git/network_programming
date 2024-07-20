@@ -121,3 +121,49 @@ void Header::SetDestinationPort(_16bits destinationPort) {
 void Header::SetSequenceNumber(_32bits sequenceNumber) {
     sequence_number = sequenceNumber;
 }
+
+void Header::SetAcknowledgmentNumber(_32bits acknowlegmentNumber) {
+    acknowledgment_number = acknowlegmentNumber;
+}
+
+void Header::SetDataOffset(_4bits dataOffset) {
+    data_offset.a = dataOffset.a;
+    data_offset.b = dataOffset.b;
+    data_offset.c = dataOffset.c;
+    data_offset.d = dataOffset.d;
+}
+
+void Header::SetReserved(_4bits res) {
+    reserved.a = res.a;
+    reserved.b = res.b;
+    reserved.c = res.c;
+    reserved.d = res.d;
+
+}
+
+void Header::SetFlags(_8bits flag) {
+    flags.cwr = flag.cwr;
+    flags.ece = flag.ece;
+    flags.urg = flag.urg;
+    flags.ack = flag.ack;
+    flags.psh = flag.psh;
+    flags.rst = flag.rst;
+    flags.syn = flag.syn;
+    flags.fin = flag.fin;
+}
+
+void Header::SetWindowSize(_16bits windowSize) {
+    window_size = windowSize;
+}
+
+void Header::SetChecksum(_16bits cSum) {
+    checksum = cSum;
+}
+
+void Header::SetUrgentPointer(_16bits urgentPointer) {
+    urgent_pointer = urgentPointer;
+}
+
+void Header::SetOptions(_32bits op) {
+    options = op;
+}

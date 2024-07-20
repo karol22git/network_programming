@@ -1,6 +1,13 @@
+#pragma once
+#include "Network.hpp"
 #include "States.hpp"
 #include "DataTypes.hpp"
 #include "Datagram.hpp"
+#include "HeaderGenerator.hpp"
+#include "Clock.hpp"
+#include <queue>
+#include <thread>
+#include <list>
 struct TransmissionControlBlock {
     int snd_una,
         snd_nxt,
@@ -24,9 +31,11 @@ class Host {
         void SetState(States);
         void FetchDataFromNetwork();
         void CheckForReceivedData();
-        void ProceedThreeWayHandshake();
+        void ProceedThreeWayHandshake(struct Datagram);
     private:
-        const std::string ip;
+        void ProceedDatagram(struct Datagram);
+        struct TransmissionControlBlock tcb;
+        std::string ip;
         _16bits port;
         std::thread sender;
         std::thread receiver;
@@ -34,7 +43,8 @@ class Host {
         std::shared_ptr<Network> endpoint;
         std::list<Segment> connection;
         std::queue<struct Datagram> datagrams;
-
-        SegmentGenerator *generator;
+        int initial_sequance_number;
+        HeaderGenerator *generator;
+        Clock* clock;
         States state = States::CLOSED;
-}
+};

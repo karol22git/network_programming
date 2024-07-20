@@ -1,6 +1,7 @@
 #pragma once
 #include "DataTypes.hpp"
 #include "Flags.hpp"
+
 class Header {
     public:
         Header(_16bits source, _16bits destination);
@@ -21,6 +22,14 @@ class Header {
         void SetSourcePort(_16bits);
         void SetDestinationPort(_16bits);
         void SetSequenceNumber(_32bits);
+        void SetAcknowledgmentNumber(_32bits);
+        void SetDataOffset(_4bits);
+        void SetReserved(_4bits);
+        void SetFlags(_8bits);
+        void SetWindowSize(_16bits);
+        void SetChecksum(_16bits);
+        void SetUrgentPointer(_16bits);
+        void SetOptions(_32bits);
     private:
         _32bits sequence_number;
         _32bits acknowledgment_number;

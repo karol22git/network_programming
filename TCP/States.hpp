@@ -1,3 +1,4 @@
+#pragma once
 enum States {
     LISTEN = 1,
     SYN_SENT,
