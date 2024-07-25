@@ -1,6 +1,7 @@
 #pragma once
 #include "DataTypes.hpp"
 #include "Flags.hpp"
+#include "HeaderTypes.hpp"
 
 class Header {
     public:
@@ -30,6 +31,7 @@ class Header {
         void SetChecksum(_16bits);
         void SetUrgentPointer(_16bits);
         void SetOptions(_32bits);
+        HeaderType GetHeaderType();
     private:
         _32bits sequence_number;
         _32bits acknowledgment_number;

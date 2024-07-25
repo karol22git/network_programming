@@ -44,7 +44,7 @@ class Host {
         std::list<Segment> connection;
         std::queue<struct Datagram> datagrams;
         int initial_sequance_number;
-        HeaderGenerator *generator;
-        Clock* clock;
+        std::unique_ptr<HeaderGenerator> generator;
+        std::unique_ptr<Clock> clock; 
         States state = States::CLOSED;
 };

@@ -1,10 +1,12 @@
 #include "Host.hpp"
-
+#include <iostream>
 
 
 Host::Host(std::string _ip, _16bits _port) {
     ip = _ip;
     port = _port;
+    clock = std::make_unique<Clock>();
+    generator = std::make_unique<HeaderGenerator>();
 }
 void Host::SetState(States newState) {
     state = newState;
@@ -39,7 +41,19 @@ void Host::ProceedDatagram(struct Datagram datagram) {
         
     }
     else {
-        ProceedThreeWayHandshake(datagram);
+        HaederType hType = GetHeaderType(datagram.segment.header);
+        if(hType == HeaderTypes::SYN) {
+            tcb.irs = datagram.segment.header->GetSequenceNumber();
+            tcb.iss = clock->GetSequenceNumber();
+            struct Datagram newDatagram;
+            struct Segment newSegment;
+            newSegment.data = 0;
+            newSegment.header = generator->GenerateSynAckHeader(port, datagram.segment.header->GetSourcePort(), tcb.iss, tcb.irs + 1);
+            newDatagram.ip = datagram.source_ip;
+            newDatagram.source_ip = ip;
+            newDatagram.Segment = newSegment;
+            endpoint->Post(newDatagram);
+        }
     }
 }
 
@@ -58,6 +72,7 @@ void Host::OpenForConnectionActively(std::string destination_ip, _16bits destina
     newSegment.data = 0;
 
     newDatagram.ip = destination_ip;
+    newDatagram.source_ip = ip;
     newDatagram.segment = newSegment;
 
     endpoint->Post(newDatagram);

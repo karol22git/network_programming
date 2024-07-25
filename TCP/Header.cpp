@@ -167,3 +167,14 @@ void Header::SetUrgentPointer(_16bits urgentPointer) {
 void Header::SetOptions(_32bits op) {
     options = op;
 }
+
+HeaderType Header::GetHeaderType() {
+    HeaderType result = HeaderTypes::UNDEFINED;
+    if(flags.syn == 1 && flags.ack) {
+        result = HeaderTypes::SYNACK;
+    }
+    else if(flags.syn == 1) {
+        result = HeaderTypes::SYN;
+    }
+    return result;
+}

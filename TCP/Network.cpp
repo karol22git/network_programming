@@ -57,8 +57,6 @@ void Network::Post(struct Datagram datagram) {
     NewDatagram <<"options: " <<header->GetOptions() << std::endl;
 
     NewDatagram.close();
-    bytestream.push_back(datagram);
-    auto s = Fetch(datagram.ip);
 }
 
 std::shared_ptr<Header> Network::ParseDatagram(std::string file) {
