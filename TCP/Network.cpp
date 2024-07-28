@@ -20,18 +20,26 @@ struct Datagram Network::Fetch(std::string ip) {
         std::string file_name = p.path().stem().string(); //.stem().
         int first_occurance_of_ = file_name.find('_');
         std::string sequence_number = file_name.substr(first_occurance_of_ + 1);
+        std::string datagram_ip = file_name.substr(0,first_occurance_of_);
         int n = std::stoi(sequence_number);
-        if(n < current_min_sequence_number) {
+        if(ip == datagram_ip && n < current_min_sequence_number) {
             current_min_sequence_number = n;
             current_file = file_name;
         }
     }
-    std::shared_ptr<Header> header = ParseDatagram(current_file);
+    std::shared_ptr<Header> header;// = ParseDatagram(current_file);
+    if(current_file != "") {
+        header = ParseDatagram(current_file);
+    }
+    else {
+        header = nullptr;
+    }
     struct Datagram fetchedDatagram;
     struct Segment fetchedSegment;
     fetchedSegment.data = 0;
     fetchedSegment.header = header;
     fetchedDatagram.ip = ip;
+    fetchedDatagram.source_ip = GetSourceIp(current_file);
     fetchedDatagram.segment = fetchedSegment;
     return fetchedDatagram;
    // return current_file;
@@ -43,30 +51,33 @@ void Network::Post(struct Datagram datagram) {
     _4bits data_offset = header->GetDataOffset();
     _4bits reserved = header->GetReserved();
     _8bits flags  = header->GetFlags();
-
-    NewDatagram << "source port: " << std::to_string(header->GetSourcePort())<<std::endl;
-    NewDatagram<< "destination port: " <<std::to_string(header->GetDestinationPort())<<std::endl;
-    NewDatagram<< "sequence number: " <<std::to_string(header->GetSequenceNumber())<<std::endl;
-    NewDatagram<< "acknowledgment number: " <<std::to_string(header->GetAcknowledgmentNumber())<<std::endl;
-    NewDatagram<< "data offset: " << data_offset.a << data_offset.b << data_offset.c <<data_offset.d <<std::endl;
+    NewDatagram <<"source_ip: "<< datagram.source_ip<<std::endl;
+    NewDatagram << "source_port: " << std::to_string(header->GetSourcePort())<<std::endl;
+    NewDatagram<< "destination_port: " <<std::to_string(header->GetDestinationPort())<<std::endl;
+    NewDatagram<< "sequence_number: " <<std::to_string(header->GetSequenceNumber())<<std::endl;
+    NewDatagram<< "acknowledgment_number: " <<std::to_string(header->GetAcknowledgmentNumber())<<std::endl;
+    NewDatagram<< "data_offset: " << data_offset.a << data_offset.b << data_offset.c <<data_offset.d <<std::endl;
     NewDatagram<< "reserved: " << reserved.a <<reserved.b <<reserved.c << reserved.d <<std::endl;
     NewDatagram << "flags: " << flags.ack << flags.cwr << flags.ece << flags.fin << flags.psh << flags.rst << flags.syn << flags.urg <<std::endl;
-    NewDatagram << "window size: " <<header->GetWindowSize()<< std::endl;
+    NewDatagram << "window_size: " <<header->GetWindowSize()<< std::endl;
     NewDatagram << "checksum: " <<header->GetChecksum() <<std::endl;
-    NewDatagram << "urgent pointer: " << header->GetUrgentPointer() << std::endl;
+    NewDatagram << "urgent_pointer: " << header->GetUrgentPointer() << std::endl;
     NewDatagram <<"options: " <<header->GetOptions() << std::endl;
 
     NewDatagram.close();
 }
 
 std::shared_ptr<Header> Network::ParseDatagram(std::string file) {
+    std::cout<<"elo"<<std::endl;
     std::shared_ptr<Header> parsed_header = std::make_shared<Header>();
     std::ifstream DatagramFile("NETWORK/" + file + ".datagram");
     std::string text_fetched_from_file;
-    int counter = 0;
+    int counter = 1;
+    std::getline(DatagramFile,text_fetched_from_file);
     while(std::getline(DatagramFile,text_fetched_from_file)) {
-        int first_occurance_of_whitespace = file.find('_');
+        int first_occurance_of_whitespace = text_fetched_from_file.find(' ');
         std::string fetched_value = text_fetched_from_file.substr(first_occurance_of_whitespace +1);
+        std::cout<<counter<< " "<< first_occurance_of_whitespace<<" "<<fetched_value<<std::endl;
         switch(counter) {
             case 1:
                 {
@@ -156,4 +167,14 @@ std::shared_ptr<Header> Network::ParseDatagram(std::string file) {
         ++counter;
     }
     return parsed_header;
+}
+
+
+std::string Network::GetSourceIp(std::string file) {
+    std::ifstream DatagramFile("NETWORK/" + file + ".datagram");
+    std::string text_fetched_from_file;
+    std::getline(DatagramFile,text_fetched_from_file);
+    int first_occurance_of_whitespace = text_fetched_from_file.find(' ');
+    std::string fetched_value = text_fetched_from_file.substr(first_occurance_of_whitespace +1);
+    return fetched_value;
 }

@@ -28,7 +28,7 @@ int main(int argc, char* argv[]) {
     std::unique_ptr<Host> myHost = std::make_unique<Host>(ip,port);
     if(strcmp(argv[3], "1") == 0) {
         ip = argv[4];
-        port = std::stoi(argv[5]);
+        port = std::atoi(argv[5]);
         myHost->OpenForConnectionActively(ip,port);
     
     }

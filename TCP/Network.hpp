@@ -15,6 +15,7 @@ class Network {
         //std::string Fetch(std::string);
     private:
         std::shared_ptr<Header> ParseDatagram(std::string);
+        std::string GetSourceIp(std::string file);
         std::list<struct Datagram> bytestream;
         static std::shared_ptr<Network> network_;// = nullptr;
 };

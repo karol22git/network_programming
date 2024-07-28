@@ -7,6 +7,7 @@ Host::Host(std::string _ip, _16bits _port) {
     port = _port;
     clock = std::make_unique<Clock>();
     generator = std::make_unique<HeaderGenerator>();
+    PrepareToConnection();
 }
 void Host::SetState(States newState) {
     state = newState;
@@ -15,6 +16,7 @@ void Host::SetState(States newState) {
 void Host::OpenForConnectionPassively() {
     SetState(States::LISTEN);
     receiver = std::thread(&Host::FetchDataFromNetwork,this);
+    receiver.join();
 }
 
 void Host::FetchDataFromNetwork() {
@@ -22,9 +24,11 @@ void Host::FetchDataFromNetwork() {
     for(;;) {
         fetchedDatagram = endpoint->Fetch(ip);
         if(fetchedDatagram.segment.header != nullptr) {
+            std::cout<<"test"<<std::endl;
             datagrams.push(fetchedDatagram);
         }
         CheckForReceivedData();
+        std::cout<<"looking for datagram to fetch..."<<std::endl;
         std::this_thread::sleep_for(std::chrono::milliseconds(250));
     }
 }
@@ -38,11 +42,11 @@ void Host::CheckForReceivedData() {
 
 void Host::ProceedDatagram(struct Datagram datagram) {
     if(isConnectionEstablished) {
-        
+        std::cout<<"Hello World!"<<std::endl;
     }
     else {
-        HaederType hType = GetHeaderType(datagram.segment.header);
-        if(hType == HeaderTypes::SYN) {
+        HeaderType hType = datagram.segment.header->GetHeaderType();
+        if(hType == HeaderType::SYN && state == States::LISTEN) {
             tcb.irs = datagram.segment.header->GetSequenceNumber();
             tcb.iss = clock->GetSequenceNumber();
             struct Datagram newDatagram;
@@ -51,8 +55,21 @@ void Host::ProceedDatagram(struct Datagram datagram) {
             newSegment.header = generator->GenerateSynAckHeader(port, datagram.segment.header->GetSourcePort(), tcb.iss, tcb.irs + 1);
             newDatagram.ip = datagram.source_ip;
             newDatagram.source_ip = ip;
-            newDatagram.Segment = newSegment;
+            newDatagram.segment = newSegment;
             endpoint->Post(newDatagram);
+            SetState(States::SYN_RECEIVED);
+            std::cout<<"pozdro"<<std::endl;
+            receiver = std::thread(&Host::FetchDataFromNetwork,this);
+            receiver.join();
+        }
+        else if(hType == HeaderType::SYN && state == States::SYN_RECEIVED) {
+            isConnectionEstablished == true;
+        }
+        else if(hType == HeaderType::SYNACK && state == States::SYN_SENT) {
+            isConnectionEstablished == true;
+        }
+        else {
+            std::cout<<"Error has occured!"<<std::endl;
         }
     }
 }
@@ -77,4 +94,12 @@ void Host::OpenForConnectionActively(std::string destination_ip, _16bits destina
 
     endpoint->Post(newDatagram);
     SetState(States::SYN_SENT);
+    OpenForConnectionPassively();
+}
+
+
+void Host::PrepareToConnection() {
+    cStages.syn = false;
+    cStages.synack = false;
+    cStages.ack = false;
 }

@@ -53,8 +53,8 @@ Header::Header() {
     reserved.c = 0;
     reserved.d = 0;
 }
-Header::Header( _16bits source, _16bits destination ) {
-    Header();
+Header::Header( _16bits source, _16bits destination ) : Header(){
+   /// Header();
     source_port = source;
     destination_port = destination;
 
@@ -169,12 +169,13 @@ void Header::SetOptions(_32bits op) {
 }
 
 HeaderType Header::GetHeaderType() {
-    HeaderType result = HeaderTypes::UNDEFINED;
+    HeaderType result = HeaderType::UNDEFINED;
     if(flags.syn == 1 && flags.ack) {
-        result = HeaderTypes::SYNACK;
+        result = HeaderType::SYNACK;
     }
     else if(flags.syn == 1) {
-        result = HeaderTypes::SYN;
+        result = HeaderType::SYN;
     }
     return result;
 }
+

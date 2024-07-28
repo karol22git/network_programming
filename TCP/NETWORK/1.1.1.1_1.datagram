@@ -1,6 +1,6 @@
-source_ip: 1.1.1.1
-source_port: 1111
-destination_port: 2222
+source_ip: 2.2.2.2
+source_port: 2222
+destination_port: 1111
 sequence_number: 1
 acknowledgment_number: 2
 data_offset: 0000

@@ -22,6 +22,12 @@ struct TransmissionControlBlock {
         irs;
 };
 
+struct ConnectionStages {
+    bool syn,
+    synack,
+    ack;
+};
+
 class Host {
     public:
         Host(std::string, _16bits);
@@ -34,7 +40,9 @@ class Host {
         void ProceedThreeWayHandshake(struct Datagram);
     private:
         void ProceedDatagram(struct Datagram);
+        void PrepareToConnection();
         struct TransmissionControlBlock tcb;
+        struct ConnectionStages cStages;
         std::string ip;
         _16bits port;
         std::thread sender;
