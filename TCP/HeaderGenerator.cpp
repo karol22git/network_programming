@@ -21,3 +21,10 @@ std::shared_ptr<Header> HeaderGenerator::GenerateSynAckHeader(_16bits source_por
     synack->SetAcknowledgmentNumber(acknowledgment_number);
     return synack;
 }
+
+std::shared_ptr<Header> HeaderGenerator::GenerateAckHeader(_16bits source_port, _16bits destination_port, _32bits acknowledgment_number) {
+    std::shared_ptr<Header> ack = std::make_shared<Header>(source_port,destination_port);
+    ack->SetFlag(Flags::ack);
+    ack->SetAcknowledgmentNumber(acknowledgment_number);
+    return ack;
+}

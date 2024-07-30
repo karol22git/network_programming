@@ -34,6 +34,7 @@ struct Datagram Network::Fetch(std::string ip) {
     else {
         header = nullptr;
     }
+    
     struct Datagram fetchedDatagram;
     struct Segment fetchedSegment;
     fetchedSegment.data = 0;
@@ -41,6 +42,10 @@ struct Datagram Network::Fetch(std::string ip) {
     fetchedDatagram.ip = ip;
     fetchedDatagram.source_ip = GetSourceIp(current_file);
     fetchedDatagram.segment = fetchedSegment;
+    if(current_file != "") {
+        const std::string file_name_with_extension = "NETWORK/" + current_file + ".datagram";
+        std::remove(file_name_with_extension.c_str());
+    }
     return fetchedDatagram;
    // return current_file;
 }
@@ -58,7 +63,7 @@ void Network::Post(struct Datagram datagram) {
     NewDatagram<< "acknowledgment_number: " <<std::to_string(header->GetAcknowledgmentNumber())<<std::endl;
     NewDatagram<< "data_offset: " << data_offset.a << data_offset.b << data_offset.c <<data_offset.d <<std::endl;
     NewDatagram<< "reserved: " << reserved.a <<reserved.b <<reserved.c << reserved.d <<std::endl;
-    NewDatagram << "flags: " << flags.ack << flags.cwr << flags.ece << flags.fin << flags.psh << flags.rst << flags.syn << flags.urg <<std::endl;
+    NewDatagram << "flags: " << flags.cwr << flags.ece << flags.urg << flags.ack << flags.psh << flags.rst << flags.syn << flags.fin <<std::endl;
     NewDatagram << "window_size: " <<header->GetWindowSize()<< std::endl;
     NewDatagram << "checksum: " <<header->GetChecksum() <<std::endl;
     NewDatagram << "urgent_pointer: " << header->GetUrgentPointer() << std::endl;
@@ -68,7 +73,6 @@ void Network::Post(struct Datagram datagram) {
 }
 
 std::shared_ptr<Header> Network::ParseDatagram(std::string file) {
-    std::cout<<"elo"<<std::endl;
     std::shared_ptr<Header> parsed_header = std::make_shared<Header>();
     std::ifstream DatagramFile("NETWORK/" + file + ".datagram");
     std::string text_fetched_from_file;
@@ -77,7 +81,7 @@ std::shared_ptr<Header> Network::ParseDatagram(std::string file) {
     while(std::getline(DatagramFile,text_fetched_from_file)) {
         int first_occurance_of_whitespace = text_fetched_from_file.find(' ');
         std::string fetched_value = text_fetched_from_file.substr(first_occurance_of_whitespace +1);
-        std::cout<<counter<< " "<< first_occurance_of_whitespace<<" "<<fetched_value<<std::endl;
+        //std::cout<<counter<< " "<< first_occurance_of_whitespace<<" "<<fetched_value<<std::endl;
         switch(counter) {
             case 1:
                 {

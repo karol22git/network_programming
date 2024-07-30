@@ -24,7 +24,6 @@ void Host::FetchDataFromNetwork() {
     for(;;) {
         fetchedDatagram = endpoint->Fetch(ip);
         if(fetchedDatagram.segment.header != nullptr) {
-            std::cout<<"test"<<std::endl;
             datagrams.push(fetchedDatagram);
         }
         CheckForReceivedData();
@@ -58,17 +57,34 @@ void Host::ProceedDatagram(struct Datagram datagram) {
             newDatagram.segment = newSegment;
             endpoint->Post(newDatagram);
             SetState(States::SYN_RECEIVED);
-            std::cout<<"pozdro"<<std::endl;
-            receiver = std::thread(&Host::FetchDataFromNetwork,this);
-            receiver.join();
         }
-        else if(hType == HeaderType::SYN && state == States::SYN_RECEIVED) {
+        else if(hType == HeaderType::ACK && state == States::SYN_RECEIVED) {
             isConnectionEstablished == true;
+            std::cout<<"Connection establishe!"<<std::endl;
         }
         else if(hType == HeaderType::SYNACK && state == States::SYN_SENT) {
             isConnectionEstablished == true;
+            struct Datagram newDatagram;
+            struct Segment newSegment;
+            newSegment.data = 0;
+            newSegment.header = generator->GenerateAckHeader(port, datagram.segment.header->GetSourcePort(), tcb.irs + 1);
+            newDatagram.ip = datagram.source_ip;
+            newDatagram.source_ip = ip;
+            newDatagram.segment = newSegment;
+            endpoint->Post(newDatagram);
+            std::cout<<"Connection establishe!"<<std::endl;
         }
         else {
+            if(hType == HeaderType::SYNACK) {
+                std::cout<<"tut"<<std::endl;
+            }
+            else if(hType == HeaderType::UNDEFINED) {
+                std::cout<<"tut2"<<std::endl;
+            }
+            else if(hType == HeaderType::SYN) {
+                _8bits f = datagram.segment.header->GetFlags();
+                std::cout<<"tut3"<<f.cwr<< f.ece << f.urg << f.ack << f.psh<<f.rst<<f.syn<<f.fin<< std::endl;
+            } 
             std::cout<<"Error has occured!"<<std::endl;
         }
     }
@@ -94,7 +110,9 @@ void Host::OpenForConnectionActively(std::string destination_ip, _16bits destina
 
     endpoint->Post(newDatagram);
     SetState(States::SYN_SENT);
-    OpenForConnectionPassively();
+    //OpenForConnectionPassively();
+    receiver = std::thread(&Host::FetchDataFromNetwork,this);
+    receiver.join();
 }
 
 

@@ -1,5 +1,6 @@
 enum HeaderType {
     SYN = 1,
     SYNACK = 2,
-    UNDEFINED =3
+    ACK = 3,
+    UNDEFINED =4
 };

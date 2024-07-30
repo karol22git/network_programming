@@ -176,6 +176,9 @@ HeaderType Header::GetHeaderType() {
     else if(flags.syn == 1) {
         result = HeaderType::SYN;
     }
+    else if(flags.ack == 1) {
+        result = HeaderType::ACK;
+    }
     return result;
 }
 
