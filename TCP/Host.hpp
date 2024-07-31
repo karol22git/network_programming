@@ -5,6 +5,7 @@
 #include "Datagram.hpp"
 #include "HeaderGenerator.hpp"
 #include "Clock.hpp"
+#include "Console.hpp"
 #include <queue>
 #include <thread>
 #include <list>
@@ -38,7 +39,9 @@ class Host {
         void FetchDataFromNetwork();
         void CheckForReceivedData();
         void ProceedThreeWayHandshake(struct Datagram);
+        States GetState();
     private:
+        struct Datagram PrepareDatagram(std::string, std::string);
         void ProceedDatagram(struct Datagram);
         void PrepareToConnection();
         struct TransmissionControlBlock tcb;
@@ -54,5 +57,6 @@ class Host {
         int initial_sequance_number;
         std::unique_ptr<HeaderGenerator> generator;
         std::unique_ptr<Clock> clock; 
+        std::unique_ptr<Console> console;
         States state = States::CLOSED;
 };

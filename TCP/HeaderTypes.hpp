@@ -1,3 +1,4 @@
+#pragma once
 enum HeaderType {
     SYN = 1,
     SYNACK = 2,
