@@ -84,3 +84,7 @@ std::string Console::HeaderTypeToString(HeaderType hType) {
     }
     return result;
 }
+
+void Console::ConnectionEstablished() {
+    std::cout<<"Connection is established."<<std::endl;
+}

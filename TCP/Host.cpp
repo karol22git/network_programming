@@ -8,7 +8,6 @@ Host::Host(std::string _ip, _16bits _port) {
     clock = std::make_unique<Clock>();
     generator = std::make_unique<HeaderGenerator>();
     console = std::make_unique<Console>();
-    PrepareToConnection();
 }
 void Host::SetState(States newState) {
     state = newState;
@@ -16,20 +15,19 @@ void Host::SetState(States newState) {
 
 void Host::OpenForConnectionPassively() {
     SetState(States::LISTEN);
-    std::cout<<"Current state: LISTEN"<<std::endl;
+    console->PrintState(this);
     receiver = std::thread(&Host::FetchDataFromNetwork,this);
     receiver.join();
 }
 
 void Host::FetchDataFromNetwork() {
-    struct Datagram fetchedDatagram;// = endpoint.GetDatagram(ip);
+    struct Datagram fetchedDatagram;
     for(;;) {
         fetchedDatagram = endpoint->Fetch(ip);
         if(fetchedDatagram.segment.header != nullptr) {
             datagrams.push(fetchedDatagram);
         }
         CheckForReceivedData();
-        //std::cout<<"looking for datagram to fetch..."<<std::endl;
         std::this_thread::sleep_for(std::chrono::milliseconds(250));
     }
 }
@@ -43,58 +41,56 @@ void Host::CheckForReceivedData() {
 
 void Host::ProceedDatagram(struct Datagram datagram) {
     if(isConnectionEstablished) {
-        std::cout<<"Hello World!"<<std::endl;
+        console->Log(this, datagram);
     }
     else {
+        console->Log(this,datagram);
         HeaderType hType = datagram.segment.header->GetHeaderType();
         if(hType == HeaderType::SYN && state == States::LISTEN) {
-            tcb.irs = datagram.segment.header->GetSequenceNumber();
-            tcb.iss = clock->GetSequenceNumber();
-            struct Datagram newDatagram = PrepareDatagram(ip, datagram.source_ip);
-            newDatagram.segment.header = generator->GenerateSynAckHeader(port, datagram.segment.header->GetSourcePort(), tcb.iss, tcb.irs + 1);
-            endpoint->Post(newDatagram);
-           // std::cout<<"I send SYNACK segment, im in SYN_RECEIVED state"<<std::endl;
-           console->Log(this,datagram);
-           SetState(States::SYN_RECEIVED);
+            InitializeSequenceNumbers(datagram.segment.header->GetSequenceNumber());
+            //tcb.irs = datagram.segment.header->GetSequenceNumber();
+           //tcb.iss = clock->GetSequenceNumber();
+            //struct Datagram newDatagram = PrepareDatagram(ip, datagram.source_ip);
+            //tcb.snd_nxt = tcb.irs + 1;
+            //newDatagram.segment.header = generator->GenerateSynAckHeader(port, datagram.segment.header->GetSourcePort(), tcb.iss, tcb.snd_nxt);
+            //tcb.snd_nxt = tcb.snd_nxt +1;
+            //endpoint->Post(newDatagram);
+            //console->Log(this,datagram);
+            ThreeWayHandshakeStageOne(datagram.source_ip, datagram.segment.header->GetSourcePort());
+            SetState(States::SYN_RECEIVED);
         }
         else if(hType == HeaderType::ACK && state == States::SYN_RECEIVED) {
-            isConnectionEstablished == true;
-            std::cout<<"Connection established!"<<std::endl;
+            //isConnectionEstablished == true;
+            //console->Log(this,datagram);
+            //console->ConnectionEstablished();
+            //SetState(States::ESTABLISHED);
+            //OpenConnection();
+            ThreeWayHandshakeStageThree();
         }
         else if(hType == HeaderType::SYNACK && state == States::SYN_SENT) {
-
+           // tcb.irs = datagram.segment.header->GetSequenceNumber();
+           InitializeIRS(datagram.segment.header->GetSequenceNumber());
             struct Datagram newDatagram = PrepareDatagram(ip,datagram.source_ip);
-            newDatagram.segment.header = generator->GenerateAckHeader(port, datagram.segment.header->GetSourcePort(), tcb.irs + 1);
+           // tcb.snd_nxt = tcb.irs +1;
+            newDatagram.segment.header = generator->GenerateAckHeader(port, datagram.segment.header->GetSourcePort(), tcb.snd_nxt);
+            tcb.snd_nxt = tcb.snd_nxt +1;
             endpoint->Post(newDatagram);
-            //std::cout<<"I send ACK segment, im in ESTABLISEHD state"<<std::endl;
             isConnectionEstablished == true;
-            console->Log(this,datagram);
-            std::cout<<"Connection established!"<<std::endl;
+            //console->Log(this,datagram);
+            console->ConnectionEstablished();
             SetState(States::ESTABLISHED);
+           // std::this_thread::sleep_for(std::chrono::milliseconds(250));
+            OpenConnection();
         }
         else {
-         /*   if(hType == HeaderType::SYNACK) {
-                std::cout<<"tut"<<std::endl;
-            }
-            else if(hType == HeaderType::UNDEFINED) {
-                std::cout<<"tut2"<<std::endl;
-            }
-            else if(hType == HeaderType::SYN) {
-                _8bits f = datagram.segment.header->GetFlags();
-                std::cout<<"tut3"<<f.cwr<< f.ece << f.urg << f.ack << f.psh<<f.rst<<f.syn<<f.fin<< std::endl;
-            }*/ 
-            std::cout<<"Error has occured!"<<std::endl;
+            std::cout<<"Error has occured!"<<isConnectionEstablished<<std::endl;
         }
     }
 }
 
-void Host::ProceedThreeWayHandshake(struct Datagram datagram) {
-
-}
 
 
 void Host::OpenForConnectionActively(std::string destination_ip, _16bits destination_port) {
-    //initial_sequance_number = clock->GetSequenceNumber();
     tcb.iss = clock->GetSequenceNumber();
 
 
@@ -107,13 +103,6 @@ void Host::OpenForConnectionActively(std::string destination_ip, _16bits destina
     //OpenForConnectionPassively();
     receiver = std::thread(&Host::FetchDataFromNetwork,this);
     receiver.join();
-}
-
-
-void Host::PrepareToConnection() {
-    cStages.syn = false;
-    cStages.synack = false;
-    cStages.ack = false;
 }
 
 struct Datagram Host::PrepareDatagram(std::string source_ip, std::string destination_ip) {
@@ -129,4 +118,77 @@ struct Datagram Host::PrepareDatagram(std::string source_ip, std::string destina
 
 States Host::GetState() {
     return state;
+}
+
+void Host::PrepareDataToBeSend(int bytes, std::string destination_ip, _16bits destination_port) {
+    int number_of_segments =static_cast<int>(bytes/(MAXIMUM_SEGMENT_SIZE - HEADER_SIZE)) + 1;
+    int bytes_left = bytes;
+    for(int i = 0 ; i < number_of_segments ; ++i) {
+        struct Datagram newDatagram;
+        newDatagram.source_ip = ip;
+        newDatagram.ip = destination_ip;
+
+        struct Segment newSegment;
+        if(bytes_left > MAXIMUM_SEGMENT_SIZE - HEADER_SIZE) {
+            newSegment.data = MAXIMUM_SEGMENT_SIZE - HEADER_SIZE;
+        }
+        else {
+            newSegment.data = bytes_left;
+        }
+        newDatagram.segment = newSegment;
+        newDatagram.segment.header = generator->GeneratePlainHeader(port, destination_port);
+        bytes_left = bytes_left - (MAXIMUM_SEGMENT_SIZE - HEADER_SIZE);
+        data_to_be_send.push(newDatagram);
+    }
+}
+
+void Host::OpenConnection() {
+    sender = std::thread(&Host::PostDataOnNetwork,this);
+    sender.join();
+}
+
+void Host::PostDataOnNetwork() {
+    for(;;) {
+        if(data_to_be_send.size() != 0) {
+            std::cout<<"tut"<<std::endl;
+            data_to_be_send.front().segment.header->SetSequenceNumber(tcb.snd_nxt);
+            tcb.snd_nxt = tcb.snd_nxt +1;
+            endpoint->Post(data_to_be_send.front());
+            data_to_be_send.pop();
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(250));
+        std::cout<<data_to_be_send.size()<<std::endl;
+    }
+}
+
+void Host::InitializeSequenceNumbers(_32bits received_sn) {
+    tcb.irs = received_sn;
+    tcb.iss = clock->GetSequenceNumber();
+    tcb.snd_nxt = tcb.irs;
+}
+
+void Host::InitializeIRS(_32bits received_sn) {
+    tcb.irs = received_sn;
+    tcb.snd_nxt = tcb.irs;
+}
+
+void Host::UpdateSndNxt() {
+    tcb.snd_nxt = tcb.snd_nxt +1;
+}
+
+void Host::ThreeWayHandshakeStageOne(std::string source_ip, _16bits source_port) {
+    struct Datagram newDatagram = PrepareDatagram(ip, source_ip);
+    newDatagram.segment.header = generator->GenerateSynAckHeader(port, source_port, tcb.iss, tcb.snd_nxt);
+    endpoint->Post(newDatagram);
+    UpdateSndNxt();
+}
+
+void Host::ThreeWayHandshakeStageTwo() {
+
+}
+void Host::ThreeWayHandshakeStageThree() {
+    isConnectionEstablished == true;
+            //console->Log(this,datagram);
+    console->ConnectionEstablished();
+    SetState(States::ESTABLISHED);
 }

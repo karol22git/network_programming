@@ -8,6 +8,7 @@ class Console {
         void PrintState(Host*);
         void PrintSegmentInfo(struct Datagram);
         void Log(Host*, struct Datagram);
+        void ConnectionEstablished();
     private:
         std::string HeaderTypeToString(HeaderType);
 };
