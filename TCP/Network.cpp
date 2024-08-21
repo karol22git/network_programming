@@ -13,41 +13,18 @@ std::shared_ptr<Network> Network::GetInstance() {
 }
 
 struct Datagram Network::Fetch(std::string ip) {
-    std::filesystem::create_directories("NETWORK/");
-    int current_min_sequence_number = INT_MAX;
-    std::string current_file = "";
-    for(auto& p: std::filesystem::directory_iterator("NETWORK")) {
-        std::string file_name = p.path().stem().string(); //.stem().
-        int first_occurance_of_ = file_name.find('_');
-        std::string sequence_number = file_name.substr(first_occurance_of_ + 1);
-        std::string datagram_ip = file_name.substr(0,first_occurance_of_);
-        int n = std::stoi(sequence_number);
-        if(ip == datagram_ip && n < current_min_sequence_number) {
-            current_min_sequence_number = n;
-            current_file = file_name;
-        }
-    }
-    std::shared_ptr<Header> header;// = ParseDatagram(current_file);
+    auto current_file = FetchDatagramFilename(ip);
+    std::shared_ptr<Header> header;
     if(current_file != "") {
         header = ParseDatagram(current_file);
     }
     else {
         header = nullptr;
     }
-    
-    struct Datagram fetchedDatagram;
-    struct Segment fetchedSegment;
-    fetchedSegment.data = 0;
-    fetchedSegment.header = header;
-    fetchedDatagram.ip = ip;
+    struct Datagram fetchedDatagram = PrepareDatagram(ip, header);
     fetchedDatagram.source_ip = GetSourceIp(current_file);
-    fetchedDatagram.segment = fetchedSegment;
-    if(current_file != "") {
-        const std::string file_name_with_extension = "NETWORK/" + current_file + ".datagram";
-        std::remove(file_name_with_extension.c_str());
-    }
+    DeleteFromNetwork(current_file);
     return fetchedDatagram;
-   // return current_file;
 }
 
 void Network::Post(struct Datagram datagram) {
@@ -81,7 +58,6 @@ std::shared_ptr<Header> Network::ParseDatagram(std::string file) {
     while(std::getline(DatagramFile,text_fetched_from_file)) {
         int first_occurance_of_whitespace = text_fetched_from_file.find(' ');
         std::string fetched_value = text_fetched_from_file.substr(first_occurance_of_whitespace +1);
-        //std::cout<<counter<< " "<< first_occurance_of_whitespace<<" "<<fetched_value<<std::endl;
         switch(counter) {
             case 1:
                 {
@@ -181,4 +157,40 @@ std::string Network::GetSourceIp(std::string file) {
     int first_occurance_of_whitespace = text_fetched_from_file.find(' ');
     std::string fetched_value = text_fetched_from_file.substr(first_occurance_of_whitespace +1);
     return fetched_value;
+}
+
+std::string Network::FetchDatagramFilename(std::string ip) {
+    std::filesystem::create_directories("NETWORK/");
+    int current_min_sequence_number = INT_MAX;
+    std::string current_file = "";
+    for(auto& p: std::filesystem::directory_iterator("NETWORK")) {
+        std::string file_name = p.path().stem().string(); //.stem().
+        int first_occurance_of_ = file_name.find('_');
+        std::string sequence_number = file_name.substr(first_occurance_of_ + 1);
+        std::string datagram_ip = file_name.substr(0,first_occurance_of_);
+        int n = std::stoi(sequence_number);
+        if(ip == datagram_ip && n < current_min_sequence_number) {
+            current_min_sequence_number = n;
+            current_file = file_name;
+        }
+    }
+    return current_file;
+}
+
+struct Datagram Network::PrepareDatagram(std::string ip, std::shared_ptr<Header> header) {
+    struct Datagram fetchedDatagram;
+    struct Segment fetchedSegment;
+    fetchedSegment.data = 0;
+    fetchedSegment.header = header;
+    fetchedDatagram.ip = ip;
+    fetchedDatagram.segment = fetchedSegment;
+    
+    return fetchedDatagram;
+}
+
+void Network::DeleteFromNetwork(std::string file_name) {
+    if(file_name != "") {
+        const std::string file_name_with_extension = "NETWORK/" + file_name + ".datagram";
+        std::remove(file_name_with_extension.c_str());
+    }
 }

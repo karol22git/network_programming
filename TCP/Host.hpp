@@ -32,11 +32,7 @@ struct Connection {
     _16bits source_port;
     _16bits destination_port;
 };
-/*struct ConnectionStages {
-    bool syn,
-    synack,
-    ack;
-};*/
+
 
 class Host {
     public:
@@ -50,28 +46,29 @@ class Host {
         States GetState();
         void PrepareDataToBeSend(int, std::string, _16bits);
     private:
+        void PrepareAcknowledgment(std::string, _16bits, _32bits);
         void ThreeWayHandshakeStageThree();
         void ThreeWayHandshakeStageOne(std::string, _16bits);
+        void ThreeWayHandshakeStageTwo(std::string, _16bits);
         void UpdateSndNxt();
         void InitializeSequenceNumbers(_32bits);
+        void InitializeIRS(_32bits);
         struct Datagram PrepareDatagram(std::string, std::string);
         void ProceedDatagram(struct Datagram);
         void OpenConnection();
         void PostDataOnNetwork();
-       // void PrepareToConnection();
+        void ConnectinonHasBeenEstablished();
         struct TransmissionControlBlock tcb;
         struct Connection connection_info;
-        //struct ConnectionStages cStages;
         std::string ip;
         _16bits port;
         std::thread sender;
         std::thread receiver;
         bool isConnectionEstablished = false;
         std::shared_ptr<Network> endpoint;
-        //std::list<Segment> connection;
         std::queue<struct Datagram> datagrams;
         std::queue<struct Datagram> data_to_be_send;
-        //int initial_sequance_number;
+        std::queue<struct Datagram> data_to_be_acknowledgment;
         std::unique_ptr<HeaderGenerator> generator;
         std::unique_ptr<Clock> clock; 
         std::unique_ptr<Console> console;
