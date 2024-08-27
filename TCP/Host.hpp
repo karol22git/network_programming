@@ -10,6 +10,7 @@
 #include <thread>
 #include <list>
 
+#define RETRANSMISSION_TIME_OUT 5000
 #define MAXIMUM_SEGMENT_SIZE 64
 #define HEADER_SIZE 32
 //jeden oktet to 8 bitow, 
@@ -45,7 +46,11 @@ class Host {
         void CheckForReceivedData();
         States GetState();
         void PrepareDataToBeSend(int, std::string, _16bits);
+        void Wait();
     private:
+        void AcknowledgeSegment(_32bits);
+        void CheckForRetransmission();
+        void MarkAsSend(struct Datagram);
         void PrepareAcknowledgment(std::string, _16bits, _32bits);
         void ThreeWayHandshakeStageThree();
         void ThreeWayHandshakeStageOne(std::string, _16bits);
@@ -64,11 +69,15 @@ class Host {
         _16bits port;
         std::thread sender;
         std::thread receiver;
+        std::thread retransmiter;
         bool isConnectionEstablished = false;
         std::shared_ptr<Network> endpoint;
         std::queue<struct Datagram> datagrams;
         std::queue<struct Datagram> data_to_be_send;
-        std::queue<struct Datagram> data_to_be_acknowledgment;
+        //std::queue<struct Datagram> data_to_be_acknowledgment;
+        std::list<std::pair<struct Datagram, std::chrono::steady_clock::time_point>> data_to_be_acknowledgment;
+        std::queue<struct Datagram> acknowledgments_for_data;
+        //std::list<struct Datagram> 
         std::unique_ptr<HeaderGenerator> generator;
         std::unique_ptr<Clock> clock; 
         std::unique_ptr<Console> console;

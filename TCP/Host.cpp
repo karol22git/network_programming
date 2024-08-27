@@ -16,11 +16,7 @@ void Host::SetState(States newState) {
 void Host::OpenForConnectionPassively() {
     SetState(States::LISTEN);
     console->PrintState(this);
-    //OpenConnection();
     receiver = std::thread(&Host::FetchDataFromNetwork,this);
-    receiver.join();
-    sender = std::thread(&Host::PostDataOnNetwork,this);
-    sender.join();
 }
 
 void Host::FetchDataFromNetwork() {
@@ -31,8 +27,7 @@ void Host::FetchDataFromNetwork() {
             datagrams.push(fetchedDatagram);
         }
         CheckForReceivedData();
-        std::this_thread::sleep_for(std::chrono::milliseconds(250));
-        std::cout<<"Narandero"<<std::endl;
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
     }
 }
 
@@ -48,16 +43,14 @@ void Host::ProceedDatagram(struct Datagram datagram) {
     console->Log(this,datagram);
     if(isConnectionEstablished) {
         if(hType == HeaderType::ACK) {
-
+            _32bits ackNumber = datagram.segment.header->GetAcknowledgmentNumber();
+            AcknowledgeSegment(ackNumber);
         }
         else {
             PrepareAcknowledgment(datagram.source_ip, datagram.segment.header->GetSourcePort(),datagram.segment.header->GetSequenceNumber());
-            std::cout<<"TUTaj"<<data_to_be_acknowledgment.size()<<std::endl;
         }
     }
     else {
-        //console->Log(this,datagram);
-        //HeaderType hType = datagram.segment.header->GetHeaderType();
         if(hType == HeaderType::SYN && state == States::LISTEN) {
             InitializeSequenceNumbers(datagram.segment.header->GetSequenceNumber());
             ThreeWayHandshakeStageOne(datagram.source_ip, datagram.segment.header->GetSourcePort());
@@ -71,7 +64,7 @@ void Host::ProceedDatagram(struct Datagram datagram) {
            ThreeWayHandshakeStageTwo(datagram.source_ip, datagram.segment.header->GetSourcePort());
         }
         else {
-            std::cout<<"Error has occured!"<<isConnectionEstablished<<std::endl;
+            std::cout<<"Error has occured!"<<std::endl;
         }
     }
 }
@@ -81,7 +74,6 @@ void Host::ProceedDatagram(struct Datagram datagram) {
 void Host::OpenForConnectionActively(std::string destination_ip, _16bits destination_port) {
     tcb.iss = clock->GetSequenceNumber();
 
-
     struct Datagram newDatagram = PrepareDatagram(ip,destination_ip);
     newDatagram.segment.header = generator->GenerateSynHeader(port,destination_port,tcb.iss);
 
@@ -89,7 +81,6 @@ void Host::OpenForConnectionActively(std::string destination_ip, _16bits destina
     std::cout<<"Current state: SYS_SENT"<<std::endl;
     SetState(States::SYN_SENT);
     receiver = std::thread(&Host::FetchDataFromNetwork,this);
-    receiver.join();
 }
 
 struct Datagram Host::PrepareDatagram(std::string source_ip, std::string destination_ip) {
@@ -131,26 +122,22 @@ void Host::PrepareDataToBeSend(int bytes, std::string destination_ip, _16bits de
 
 void Host::OpenConnection() {
     sender = std::thread(&Host::PostDataOnNetwork,this);
-    sender.join();
-    //
-    receiver = std::thread(&Host::FetchDataFromNetwork,this);
-    receiver.join();
 }
 
 void Host::PostDataOnNetwork() {
     for(;;) {
         if(data_to_be_send.size() != 0) {
             data_to_be_send.front().segment.header->SetSequenceNumber(tcb.snd_nxt);
+            MarkAsSend(data_to_be_send.front());
             UpdateSndNxt();
             endpoint->Post(data_to_be_send.front());
             data_to_be_send.pop();
         }
-        if(data_to_be_acknowledgment.size() != 0) {
-            endpoint->Post(data_to_be_acknowledgment.front());
-            data_to_be_acknowledgment.pop();
+        if(acknowledgments_for_data.size() != 0) {
+            endpoint->Post(acknowledgments_for_data.front());
+            acknowledgments_for_data.pop();
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(250));
-        std::cout<<"Siemandero"<<std::endl;
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
     }
 }
 
@@ -185,13 +172,16 @@ void Host::ThreeWayHandshakeStageTwo(std::string source_ip, _16bits source_port)
     OpenConnection();
 }
 void Host::ThreeWayHandshakeStageThree() {
+    sender = std::thread(&Host::PostDataOnNetwork,this);
     ConnectinonHasBeenEstablished();
+
 }
 
 void Host::ConnectinonHasBeenEstablished() {
     isConnectionEstablished = true;
     console->ConnectionEstablished();
     SetState(States::ESTABLISHED);
+    retransmiter = std::thread(&Host::CheckForRetransmission,this);
 }
 
 void Host::PrepareAcknowledgment(std::string destination_ip, _16bits destination_port, _32bits acknowledgment_number) {
@@ -200,8 +190,51 @@ void Host::PrepareAcknowledgment(std::string destination_ip, _16bits destination
     ackDatagram.segment = ackSegment;
     ackDatagram.source_ip = ip;
     ackDatagram.ip = destination_ip;
-    ackSegment.data = 0;
-    ackSegment.header = generator->GenerateAckHeader(port, destination_port, acknowledgment_number);
-    data_to_be_acknowledgment.push(ackDatagram);
+    ackDatagram.segment.data = 0;
+    ackDatagram.segment.header = generator->GenerateAckHeader(port, destination_port, acknowledgment_number);
+    acknowledgments_for_data.push(ackDatagram);
 
+}
+
+void Host::Wait() {
+    receiver.join();
+    sender.join();
+    retransmiter.join();
+}
+
+void Host::MarkAsSend(struct Datagram datagram) {
+    std::chrono::steady_clock::time_point t = std::chrono::steady_clock::now();
+    auto p = std::make_pair(datagram, t);
+    data_to_be_acknowledgment.push_back(p);
+}
+
+void Host::CheckForRetransmission() {
+    std::chrono::steady_clock::time_point now, datagramSendTime;
+    for(;;) {
+    now = std::chrono::steady_clock::now();
+    for(auto it = data_to_be_acknowledgment.begin() ; it != data_to_be_acknowledgment.end() ; ++it) {
+        datagramSendTime = std::get<1>(*it);
+        auto time_since_send =  std::chrono::duration_cast<std::chrono::milliseconds>(now - datagramSendTime).count();
+        std::cout<<time_since_send<<std::endl;
+        if(time_since_send > RETRANSMISSION_TIME_OUT) {
+            auto newPair = std::make_pair(std::get<0>(*it), now);
+            data_to_be_acknowledgment.erase(it);
+            endpoint->Post(std::get<0>(newPair));
+            data_to_be_acknowledgment.push_back(newPair);
+            std::cout<<"I send again segment: "<<std::get<0>(*it).segment.header->GetSequenceNumber()<<std::endl; 
+        }
+    }
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    }
+}
+
+void Host::AcknowledgeSegment(_32bits ackNumber) {
+    for(auto it = data_to_be_acknowledgment.begin() ; it != data_to_be_acknowledgment.end() ; ++it) {
+        auto datagram_waiting_for_be_acknowledged = std::get<0>(*it);
+        if(datagram_waiting_for_be_acknowledged.segment.header->GetSequenceNumber() == ackNumber) {
+            data_to_be_acknowledgment.erase(it);
+                std::cout<<"I acknowledged segmment: "<<ackNumber<<std::endl;
+                break;
+        }
+    }
 }
