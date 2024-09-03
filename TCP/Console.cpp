@@ -78,6 +78,9 @@ std::string Console::HeaderTypeToString(HeaderType hType) {
         case 3:
             result = "ACK";
             break;
+        case 4:
+            result = "FIN";
+            break;
         default:
             result ="UNDEFINED";
             break;

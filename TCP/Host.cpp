@@ -42,7 +42,13 @@ void Host::ProceedDatagram(struct Datagram datagram) {
     HeaderType hType = datagram.segment.header->GetHeaderType();
     console->Log(this,datagram);
     if(isConnectionEstablished) {
-        if(hType == HeaderType::ACK) {
+        if(hType == HeaderType::FIN && state == States::ESTABLISHED) {
+            GracefulConnectionRelease(datagram);
+        }
+        else if(state != States::ESTABLISHED) {
+            GracefulConnectionRelease(datagram);
+        }
+        else if(hType == HeaderType::ACK && state == States::ESTABLISHED) {
             _32bits ackNumber = datagram.segment.header->GetAcknowledgmentNumber();
             AcknowledgeSegment(ackNumber);
         }
@@ -69,8 +75,6 @@ void Host::ProceedDatagram(struct Datagram datagram) {
     }
 }
 
-
-
 void Host::OpenForConnectionActively(std::string destination_ip, _16bits destination_port) {
     tcb.iss = clock->GetSequenceNumber();
 
@@ -81,6 +85,7 @@ void Host::OpenForConnectionActively(std::string destination_ip, _16bits destina
     std::cout<<"Current state: SYS_SENT"<<std::endl;
     SetState(States::SYN_SENT);
     receiver = std::thread(&Host::FetchDataFromNetwork,this);
+    iHaveBeenActive = true;
 }
 
 struct Datagram Host::PrepareDatagram(std::string source_ip, std::string destination_ip) {
@@ -99,6 +104,8 @@ States Host::GetState() {
 }
 
 void Host::PrepareDataToBeSend(int bytes, std::string destination_ip, _16bits destination_port) {
+    tcb.destination_port = destination_port;
+    tcb.destination_ip = destination_ip;
     int number_of_segments =static_cast<int>(bytes/(MAXIMUM_SEGMENT_SIZE - HEADER_SIZE)) + 1;
     int bytes_left = bytes;
     for(int i = 0 ; i < number_of_segments ; ++i) {
@@ -132,6 +139,12 @@ void Host::PostDataOnNetwork() {
             UpdateSndNxt();
             endpoint->Post(data_to_be_send.front());
             data_to_be_send.pop();
+        }
+        else {
+            if(iHaveBeenActive) {
+                ActiveGracefulConnectionRelease(tcb.destination_ip, tcb.destination_port);
+                iHaveBeenActive = false;
+            }
         }
         if(acknowledgments_for_data.size() != 0) {
             endpoint->Post(acknowledgments_for_data.front());
@@ -171,6 +184,7 @@ void Host::ThreeWayHandshakeStageTwo(std::string source_ip, _16bits source_port)
     ConnectinonHasBeenEstablished();
     OpenConnection();
 }
+
 void Host::ThreeWayHandshakeStageThree() {
     sender = std::thread(&Host::PostDataOnNetwork,this);
     ConnectinonHasBeenEstablished();
@@ -193,7 +207,6 @@ void Host::PrepareAcknowledgment(std::string destination_ip, _16bits destination
     ackDatagram.segment.data = 0;
     ackDatagram.segment.header = generator->GenerateAckHeader(port, destination_port, acknowledgment_number);
     acknowledgments_for_data.push(ackDatagram);
-
 }
 
 void Host::Wait() {
@@ -215,13 +228,11 @@ void Host::CheckForRetransmission() {
     for(auto it = data_to_be_acknowledgment.begin() ; it != data_to_be_acknowledgment.end() ; ++it) {
         datagramSendTime = std::get<1>(*it);
         auto time_since_send =  std::chrono::duration_cast<std::chrono::milliseconds>(now - datagramSendTime).count();
-        std::cout<<time_since_send<<std::endl;
         if(time_since_send > RETRANSMISSION_TIME_OUT) {
             auto newPair = std::make_pair(std::get<0>(*it), now);
             data_to_be_acknowledgment.erase(it);
             endpoint->Post(std::get<0>(newPair));
             data_to_be_acknowledgment.push_back(newPair);
-            std::cout<<"I send again segment: "<<std::get<0>(*it).segment.header->GetSequenceNumber()<<std::endl; 
         }
     }
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
@@ -233,8 +244,57 @@ void Host::AcknowledgeSegment(_32bits ackNumber) {
         auto datagram_waiting_for_be_acknowledged = std::get<0>(*it);
         if(datagram_waiting_for_be_acknowledged.segment.header->GetSequenceNumber() == ackNumber) {
             data_to_be_acknowledgment.erase(it);
-                std::cout<<"I acknowledged segmment: "<<ackNumber<<std::endl;
                 break;
         }
     }
+}
+
+void Host::GracefulConnectionRelease(struct Datagram datagram){//std::string source_ip, _16bits source_port, _32bits acknowledgment_number) {
+    if(state == States::ESTABLISHED) {
+        SetState(States::CLOSE_WAIT);
+        SendAckHeader(datagram.source_ip, datagram.segment.header->GetSourcePort(), datagram.segment.header->GetSequenceNumber());
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        SendFinHeader(datagram.source_ip, datagram.segment.header->GetSourcePort());
+        SetState(States::LAST_ACK);
+    }
+    else if(state == States::FIN_WAIT_1) {
+        SetState(States::FIN_WAIT_2);
+    }
+    else if(state == States::FIN_WAIT_2) {
+        SetState(States::TIME_WAIT);
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        SendAckHeader(datagram.source_ip, datagram.segment.header->GetSourcePort(), datagram.segment.header->GetSequenceNumber());
+        TerminateConnection();
+    }
+    else if(state == States::LAST_ACK) {
+        SetState(States::CLOSED);
+        TerminateConnection();
+    }
+}
+
+void Host::ActiveGracefulConnectionRelease(std::string source_ip, _16bits source_port) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+    struct Datagram newDatagram = PrepareDatagram(ip,source_ip);
+    newDatagram.segment.header = generator->GenerateFinHeader(port, source_port, tcb.snd_nxt);
+    UpdateSndNxt();
+    endpoint->Post(newDatagram);
+    SetState(States::FIN_WAIT_1);
+}
+
+void Host::TerminateConnection() {
+    exit(0);
+}
+
+void Host::SendFinHeader(std::string source_ip, _16bits source_port) {
+    struct Datagram finDatagram = PrepareDatagram(ip,source_ip);
+    finDatagram.segment.header = generator->GenerateFinHeader(port, source_port, tcb.snd_nxt);
+    UpdateSndNxt();
+    endpoint->Post(finDatagram);
+}
+
+void Host::SendAckHeader(std::string source_ip, _16bits source_port, _32bits acknowledgment_number) {
+    struct Datagram ackDatagram = PrepareDatagram(ip,source_ip);
+    ackDatagram.segment.header = generator->GenerateAckHeader(port, source_port, acknowledgment_number);
+    ackDatagram.segment.header->SetChecksum(1111);
+    endpoint->Post(ackDatagram);
 }

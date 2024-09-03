@@ -2,6 +2,7 @@
 #include "DataTypes.hpp"
 #include "Flags.hpp"
 #include "HeaderTypes.hpp"
+#include <iostream>
 
 class Header {
     public:

@@ -28,7 +28,14 @@ struct Datagram Network::Fetch(std::string ip) {
 }
 
 void Network::Post(struct Datagram datagram) {
-    std::ofstream NewDatagram("NETWORK/" + datagram.ip +"_" +  std::to_string(datagram.segment.header->GetSequenceNumber()) + ".datagram");
+    std::string c;
+    if(datagram.segment.header->GetSequenceNumber() != 0) {
+        c = std::to_string(datagram.segment.header->GetSequenceNumber());
+    }
+    else {
+        c = std::to_string(datagram.segment.header->GetAcknowledgmentNumber());
+    }
+    std::ofstream NewDatagram("NETWORK/" + datagram.ip +"_" +  c/*std::to_string(datagram.segment.header->GetSequenceNumber()) */+ ".datagram");
     std::shared_ptr<Header> header = datagram.segment.header;
     _4bits data_offset = header->GetDataOffset();
     _4bits reserved = header->GetReserved();

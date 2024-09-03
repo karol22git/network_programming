@@ -28,3 +28,12 @@ std::shared_ptr<Header> HeaderGenerator::GenerateAckHeader(_16bits source_port, 
     ack->SetAcknowledgmentNumber(acknowledgment_number);
     return ack;
 }
+
+std::shared_ptr<Header> HeaderGenerator::GenerateFinHeader(_16bits source_port, _16bits destination_port,  _32bits init_sequance_number) {
+    std::shared_ptr<Header> fin = std::make_shared<Header>(source_port,destination_port);
+    fin->SetFlag(Flags::fin);
+    //fin->SetFlag(Flags::rst);
+   // fin->SetFlag(Flags::ack);
+    fin->SetSequenceNumber(init_sequance_number);
+    return fin;
+}

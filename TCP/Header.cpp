@@ -179,6 +179,9 @@ HeaderType Header::GetHeaderType() {
     else if(flags.ack == 1) {
         result = HeaderType::ACK;
     }
+    else if(flags.fin == 1) {
+        result = HeaderType::FIN;
+    }
     return result;
 }
 
