@@ -1,0 +1,8 @@
+cmake_minimum_required(VERSION 3.16)
+set(CMAKE_CXX_STANDARD 11)
+project(poker_client)
+SET(BOOST_ROOT "C:/mylibs/stock/boost_1_88_0")
+find_package(Boost REQUIRED COMPONENTS system)
+include_directories(${Boost_INCLUDE_DIRS})
+add_executable(poker_client source_code/main.cpp)
+target_link_libraries(poker_client PRIVATE Boost::system)
