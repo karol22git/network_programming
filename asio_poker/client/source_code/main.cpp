@@ -1,40 +1,27 @@
-#include <array>
+#include "../include/UdpClient.hpp"
+
 #include <iostream>
-#include <boost/asio.hpp>
+#include <string>
+int main(int argc, char* argv[]) {
+    const std::string username = "johny";
+    const std::string password = "123";
 
-using boost::asio::ip::udp;
-
-
-int main(int argc, char* argv[])
-{
-  try
-  {
-   // if (argc != 2)
-   // {
-   //   std::cerr << "Usage: client <host>" << std::endl;
-   //   return 1;
-   // }
-
+try {
     boost::asio::io_context io_context;
-        udp::resolver resolver(io_context);
-    udp::endpoint receiver_endpoint =
-      *resolver.resolve(udp::v4(),"127.0.0.1", "daytime").begin();
-          udp::socket socket(io_context);
-    socket.open(udp::v4());
-
-    std::array<char, 1> send_buf  = {{ 0 }};
-    socket.send_to(boost::asio::buffer(send_buf), receiver_endpoint);
-        std::array<char, 128> recv_buf;
-    udp::endpoint sender_endpoint;
-    size_t len = socket.receive_from(
-        boost::asio::buffer(recv_buf), sender_endpoint);
-
-    std::cout.write(recv_buf.data(), len);
-  }
-    catch (std::exception& e)
-  {
-    std::cerr << e.what() << std::endl;
-  }
-
+    std::string ip = "127.0.0.1";
+    std::string port = "8080";
+    UdpClient* player = new UdpClient(ip, port, io_context);
+    if(player->Connect(username, password)) {
+      std::cout<<"sukces"<<std::endl;
+    }
+    else {
+      std::cout<<"porazka"<<std::endl;
+    }
+    std::string s;
+    std::cin>>s;
+}
+catch (std::exception& e) {
+  std::cerr << e.what() << std::endl;
+}
   return 0;
 }
