@@ -1,4 +1,5 @@
 #pragma once
+#include "../../server/include/Constants.hpp"
 #include <string>
 #include <boost/asio.hpp>
 #include <array>
@@ -15,5 +16,6 @@ class UdpClient{
         udp::socket socket_;
         udp::endpoint receiver_endpoint;
         udp::endpoint sender_endpoint;
-        const std::string acceptedTemplate = "VERDICT ACCEPTED";
+        const std::string acceptedTemplate = "[ACCEPTED]";
+        struct Messages infoMessages;
 };

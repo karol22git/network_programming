@@ -4,7 +4,8 @@
 class Logger {
     public:
         Logger();
-        void NewConnection(std::string ip, std::string port);
+        void AcceptNewConnection(unsigned short port, std::string ip, unsigned int id);
+        void Message(std:: string, unsigned short, std::string&);
         
     private:
         std::string newConnection = "new player connected";
