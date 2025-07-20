@@ -36,7 +36,7 @@ void UdpServer::handle_send(std::string message,
 
 }
 
-bool UdpServer::isNewPlayerTryingToConnect(const std::array<char,128>& msg) {
+bool UdpServer::isNewPlayerTryingToConnect(const std::array<char,128>& msg) const {
 
     auto head_sequence = infoMessages.CONNECTION_MESSAGE.length();
     auto condition = std::equal(msg.begin(), msg.begin() + head_sequence,
