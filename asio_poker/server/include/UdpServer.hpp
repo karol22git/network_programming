@@ -4,7 +4,8 @@
 #include "Logger.hpp"
 #include "Constants.hpp"
 #include <set>
-
+#include "Moderator.hpp"
+#include "CommunicationHandler.hpp"
 using boost::asio::ip::udp;
 
 struct TransferredMessageData {
@@ -46,4 +47,6 @@ class UdpServer {
         struct Messages infoMessages;
         struct TransferredMessageData mData;
         std::set<struct endpoint> players;
+        Moderator* moderator;
+        CommunicationHandler* communicationHandler;
 };

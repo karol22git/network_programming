@@ -8,6 +8,7 @@ class Moderator {
         Moderator();
         void StartGame();
         void CreateNewPlayer(unsigned int id);
+        std::vector<Player*> GetPlayers() const;
     private:
         std::unique_ptr<Croupier> croupier = nullptr;
         std::vector<Player*> players;

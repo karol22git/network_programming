@@ -54,6 +54,13 @@ inline MessageType GetMessageType(const std::string& msg) {
 struct Card {
     Color color;
     int val;
+    Card(std::string s) {
+        if(s[0] == 'A') color = Color::pik;
+        else if(s[0] == 'B') color = Color::kier;
+        else if(s[0] == 'C"') color = Color::trefl;
+        else color = Color::karo;
+        val = std::stoi(s.substr(1));
+    }
     Card(Color c, int value) : color(c), val(value) {}
     Card() {}
     std::string toString() const {

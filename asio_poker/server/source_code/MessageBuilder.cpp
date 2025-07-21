@@ -15,5 +15,8 @@ MessageBuilder& MessageBuilder::SetParams(const std::string& _params) {
 }
 
 std::string MessageBuilder::Build() const{
-    return header;//+params;
+    std::string result = header +"[";
+    for(auto c: params) result = result +"{" + c +"}";
+    result  += "]";
+    return result;
 }

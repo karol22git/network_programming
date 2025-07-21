@@ -1,7 +1,8 @@
 #include "../include/UdpServer.hpp"
 
 
-UdpServer::UdpServer(boost::asio::io_context &io_context) :socket_(io_context,udp::endpoint(udp::v4(),8080)), logger(new Logger()) {
+UdpServer::UdpServer(boost::asio::io_context &io_context) :socket_(io_context,udp::endpoint(udp::v4(),8080)), moderator(new Moderator()), logger(new Logger()),
+    communicationHandler(new CommunicationHandler) {
     start_receive();
     //logger = new Logger();
 }
@@ -54,6 +55,8 @@ void UdpServer::AcceptConnection() {
     players.insert(new_player);
     ++nextID;
     SendMessage(infoMessages.ACCEPTED);
+    moderator->CreateNewPlayer(new_player.id);
+    moderator->StartGame();
 }
 void UdpServer::HandleNewConnection() {
     nextID < 10 ? AcceptConnection() : RefuseConnection();

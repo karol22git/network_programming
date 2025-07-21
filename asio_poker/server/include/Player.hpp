@@ -9,6 +9,7 @@ class Player {
         void Call();
         void Raise();
         void AcceptCards(std::array<struct Card, pocket_cards>);
+        std::array<struct Card, pocket_cards> GetPocketCards() const;
     private:
         std::array<struct Card, pocket_cards> cards;
         unsigned int id;
