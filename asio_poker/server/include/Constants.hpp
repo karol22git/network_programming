@@ -4,6 +4,7 @@
 const unsigned int deck_size = 52;
 const unsigned int pocket_cards = 2;
 const unsigned int flop_size = 3;
+const unsigned int extra_cards_size = 2;
 enum Color {
     pik = 1,
     kier,
@@ -17,27 +18,23 @@ enum MessageType {
     ANOTHER_CARD,
     RAISE,
     CALL,
-    PASS = 6,
-    ERROR = 7
+    PASS,
+    MSG_ERROR
 };
 
 inline Color GetCardColor(int i) {
     switch(i) {
         case 1: return Color::pik;
-
         case 2: return Color::kier;
-
         case 3: return Color::trefl;
-
         case 4: return Color::karo;
-
         default:
             return Color::pik;
     }
 }
 
 inline MessageType GetMessageType(const std::string& msg) {
-    std::map<std::string, MessageType> tmpMap  = {
+    static const std::map<std::string, MessageType> tmpMap  = {
         {"[POCKET_CARDS]", MessageType::POCKET_CARDS},
         {"[FLOP]",MessageType::FLOP},
         {"[ANOTHER_CARD]",MessageType::ANOTHER_CARD},
@@ -46,9 +43,9 @@ inline MessageType GetMessageType(const std::string& msg) {
         {"[PASS]",MessageType::PASS}};
 
     for(const auto& [key,value]: tmpMap) {
-        if(std::find(msg.begin(),msg.end(),key) != msg.end()) return value;
+        if(msg.find(key) != std::string::npos) return value;
     }
-    return MessageType::ERROR;
+    return MessageType::MSG_ERROR;
 }
 
 struct Card {
@@ -57,7 +54,7 @@ struct Card {
     Card(std::string s) {
         if(s[0] == 'A') color = Color::pik;
         else if(s[0] == 'B') color = Color::kier;
-        else if(s[0] == 'C"') color = Color::trefl;
+        else if(s[0] == 'C') color = Color::trefl;
         else color = Color::karo;
         val = std::stoi(s.substr(1));
     }

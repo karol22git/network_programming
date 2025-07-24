@@ -3,6 +3,8 @@
 #include <string>
 #include <boost/asio.hpp>
 #include <array>
+#include "Player.hpp"
+#include "MessagesHandler.hpp"
 using boost::asio::ip::udp;
 
 class UdpClient{
@@ -21,4 +23,6 @@ class UdpClient{
         udp::endpoint sender_endpoint;
         const std::string acceptedTemplate = "[ACCEPTED]";
         struct Messages infoMessages;
+        Player* player;
+        MessagesHandler* messagesHandler;
 };

@@ -1,6 +1,5 @@
 #pragma once
 #include <string>
-#include <regex>
 #include "Constants.hpp"
 #include "MessageBuilder.hpp"
 class CommunicationHandler {

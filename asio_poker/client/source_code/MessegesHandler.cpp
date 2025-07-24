@@ -4,17 +4,29 @@
 #include <iostream>
 MessagesHandler::MessagesHandler() {}
 
+void MessagesHandler::ResolveMessage(const std::string& msg) {
+    if(msg.find("POCKET_CARDS") != std::string::npos) {
+        player->SetPocketCards(ResolvePocketCardsMessage(msg));
+    }
+    else if(msg.find("FLOP") != std::string::npos) {
+        player->SetFlopCards(ResolveFlopMessage(msg));
+    }
+    else if(msg.find("ANOTHER_CARD") != std::string::npos) {
+        player->AddExtraCard(ResolveAnotherCardMessage(msg));
+    }
+}
+
 std::array<struct Card, pocket_cards> MessagesHandler::ResolvePocketCardsMessage(const std::string& msg) const {
     std::array<struct Card, pocket_cards> result;
     auto v = LiftCardsOutOfString(msg);
-    for(unsigned i  = i ; i < v.size() ;++i) result[i] = struct Card(v[i]);
+    for(unsigned int i  = 1 ; i < v.size() ;++i) result[i] = struct Card(v[i]);
     return result;
 }
 
 std::array<struct Card, flop_size> MessagesHandler::ResolveFlopMessage(const std::string& msg) const{
     std::array<struct Card, flop_size> result;
     auto v = LiftCardsOutOfString(msg);
-    for(unsigned i  = i ; i < v.size() ;++i) result[i] = struct Card(v[i]);
+    for(unsigned int i  = 1 ; i < v.size() ;++i) result[i] = struct Card(v[i]);
     return result;
 }
 
@@ -35,4 +47,8 @@ std::vector<std::string> MessagesHandler::LiftCardsOutOfString(const std::string
         start = match[0].second;
     }
     return result;
+}
+
+int MessagesHandler::ShellId(const std::string& msg) const {
+    return std::stoi(LiftCardsOutOfString(msg)[0]);
 }

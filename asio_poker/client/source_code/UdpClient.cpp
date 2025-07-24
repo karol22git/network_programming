@@ -13,7 +13,13 @@ bool UdpClient::Connect(const std::string& username, const std::string& password
     std::array<char, 128> recv_buf;
     size_t len = socket_.receive_from(
         boost::asio::buffer(recv_buf), sender_endpoint);
-    return isConnectionAccepted(recv_buf);
+    //return isConnectionAccepted(recv_buf);
+    if(isConnectionAccepted(recv_buf)) {
+        std::string msg(recv_buf.data(), len);
+        player = new Player(messagesHandler->ShellId(msg));
+        return true;
+    }
+    else return false;
 }
 
 bool UdpClient::isConnectionAccepted(const std::array<char,128>& buf) const {
@@ -27,7 +33,7 @@ std::string UdpClient::GenerateLogInMessage(const std::string& username, const s
 
 void UdpClient::start_receive() {
     socket_.async_receive_from( boost::asio::buffer(recv_buffer_), receiver_endpoint,
-        std::bind(&UdpServer::handle_receive, this,
+        std::bind(&UdpClient::handle_receive, this,
             boost::asio::placeholders::error,
             boost::asio::placeholders::bytes_transferred));
 }
@@ -35,4 +41,6 @@ void UdpClient::start_receive() {
 void UdpClient::handle_receive(const boost::system::error_code& error,std::size_t bytes_transferred) {
     std::string msg(recv_buffer_.data(), bytes_transferred);
     std::cout<<msg<<std::endl;
+    messagesHandler->ResolveMessage(msg);
+    start_receive();
 }

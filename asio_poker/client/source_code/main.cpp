@@ -13,10 +13,13 @@ try {
     UdpClient* player = new UdpClient(ip, port, io_context);
     if(player->Connect(username, password)) {
       std::cout<<"sukces"<<std::endl;
+      player->start_receive();
+      io_context.run();
     }
     else {
       std::cout<<"porazka"<<std::endl;
     }
+    std::cout<<"elo"<<std::endl;
     std::string s;
     std::cin>>s;
 }

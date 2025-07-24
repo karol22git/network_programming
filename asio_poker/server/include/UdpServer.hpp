@@ -6,6 +6,7 @@
 #include <set>
 #include "Moderator.hpp"
 #include "CommunicationHandler.hpp"
+#include <memory>
 using boost::asio::ip::udp;
 
 struct TransferredMessageData {
@@ -36,7 +37,10 @@ class UdpServer {
         void RefuseConnection();
         void start_receive();
         void handle_receive(const boost::system::error_code& error,std::size_t /*bytes_transferred*/);
-        void handle_send(std::string /*message*/,const boost::system::error_code& /*error*/,std::size_t /*bytes_transferred*/);
+        //void handle_send(std::string /*message*/,const boost::system::error_code& /*error*/,std::size_t /*bytes_transferred*/);
+        void handle_send(std::shared_ptr<std::string> message, const boost::system::error_code& error,std::size_t bytes_transferred) ;
+
+
         void AcceptConnection();
         udp::socket socket_;
         udp::endpoint remote_endpoint_;
