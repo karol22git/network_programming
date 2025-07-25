@@ -5,6 +5,8 @@ const unsigned int deck_size = 52;
 const unsigned int pocket_cards = 2;
 const unsigned int flop_size = 3;
 const unsigned int extra_cards_size = 2;
+const unsigned int start_cash = 500;
+const unsigned int quorum = 2;
 enum Color {
     pik = 1,
     kier,

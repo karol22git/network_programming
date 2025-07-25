@@ -12,3 +12,7 @@ void Player::AcceptCards(std::array<struct Card, pocket_cards> pocketCards) {
 std::array<struct Card, pocket_cards> Player::GetPocketCards() const {
     return cards;
 }
+
+unsigned int Player::GetId() const {
+    return id;
+}

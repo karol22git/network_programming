@@ -7,6 +7,7 @@ class MessagesHandler {
     public:
         MessagesHandler();
         void ResolveMessage(const std::string&);
+        void SetPlayer(Player*);
         std::array<struct Card, pocket_cards> ResolvePocketCardsMessage(const std::string&) const;
         std::array<struct Card, flop_size> ResolveFlopMessage(const std::string&) const;
         struct Card ResolveAnotherCardMessage(const std::string&) const;

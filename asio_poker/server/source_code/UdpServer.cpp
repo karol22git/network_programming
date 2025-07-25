@@ -1,4 +1,8 @@
 #include "../include/UdpServer.hpp"
+
+#include <thread>
+#include <chrono>
+
 UdpServer::UdpServer(boost::asio::io_context &io_context) :socket_(io_context,udp::endpoint(udp::v4(),8080)), moderator(new Moderator()), logger(new Logger()),
     communicationHandler(new CommunicationHandler) {
     start_receive();
@@ -55,20 +59,22 @@ void UdpServer::RefuseConnection() {
 }
 
 void UdpServer::AcceptConnection() {
-    struct endpoint new_player(remote_endpoint_.port(), remote_endpoint_.address().to_string(), nextID);
+    struct endpoint new_player(remote_endpoint_.port(), remote_endpoint_.address().to_string(), nextID,remote_endpoint_);
     logger->AcceptNewConnection(remote_endpoint_.port(), remote_endpoint_.address().to_string(), nextID);
-    players.insert(new_player);
+    players[new_player.id] = new_player;
     ++nextID;
-    SendMessage(infoMessages.ACCEPTED);
+    SendMessage(infoMessages.ACCEPTED + "{" + std::to_string(new_player.id) +"}");
+
+
     moderator->CreateNewPlayer(new_player.id);
-    moderator->StartGame();
-    auto players = moderator->GetPlayers();
-    auto p = players[0];
-    auto cards = p->GetPocketCards();
-    std::string s;
-    if(cards.size() >1) s = communicationHandler->GeneratePocketCardsMessage(cards[0],cards[1]);
-    else s = "error";
-    SendMessage(s);
+    auto condition = CheckForQuorum();
+    if(condition) StartGame();
+    //moderator->StartGame();
+    //auto players = moderator->GetPlayers();
+    //auto p = players[0];
+    //auto cards = p->GetPocketCards();
+    //std::string  s = communicationHandler->GeneratePocketCardsMessage(cards[0],cards[1]);
+    //SendMessage(s);
 }
 
 void UdpServer::HandleNewConnection() {
@@ -79,6 +85,48 @@ void UdpServer::SendMessage(const std::string& msg) {
     logger->MessageSend(remote_endpoint_.address().to_string(), remote_endpoint_.port(), msg);
     auto msg_ptr = std::make_shared<std::string>(msg);
     socket_.async_send_to(boost::asio::buffer(*msg_ptr), remote_endpoint_,
+        std::bind(&UdpServer::handle_send, this, msg_ptr,
+        boost::asio::placeholders::error,
+        boost::asio::placeholders::bytes_transferred));
+}
+
+bool UdpServer::CheckForQuorum() const {
+    if( nextID>= quorum) return true;
+    else return false;
+}
+
+void UdpServer::StartGame() {
+    std::this_thread::sleep_for(std::chrono::seconds(2));
+    moderator->StartGame();
+    SendPocketCards();
+   // std::this_thread::sleep_for(std::chrono::seconds(1));
+    //std::string msg = "hello";
+    //auto msg_ptr = std::make_shared<std::string>(msg);
+    //SendMessage("hello");
+    SendFlop();
+}
+
+void UdpServer::SendPocketCards() {
+    auto playersList = moderator->GetPlayers();
+    for(auto player: playersList) {
+        auto cards = player->GetPocketCards();
+        std::string  s = communicationHandler->GeneratePocketCardsMessage(cards[0],cards[1]);
+        SendMessage(s,players[player->GetId()].remote_endpoint);
+    }
+}
+
+void UdpServer::SendFlop() {
+    auto flop = moderator->GetFlop();
+    auto msg = communicationHandler->GenerateFlopMessage(flop[0],flop[1],flop[2]);
+    for(const auto& [key, value] : players) {
+        SendMessage(msg, value.remote_endpoint);
+    }
+}
+
+void UdpServer::SendMessage(const std::string& msg, udp::endpoint endpoint) {
+    logger->MessageSend(endpoint.address().to_string(), endpoint.port(), msg);
+    auto msg_ptr = std::make_shared<std::string>(msg);
+    socket_.async_send_to(boost::asio::buffer(*msg_ptr), endpoint,
         std::bind(&UdpServer::handle_send, this, msg_ptr,
         boost::asio::placeholders::error,
         boost::asio::placeholders::bytes_transferred));

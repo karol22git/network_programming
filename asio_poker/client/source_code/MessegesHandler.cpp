@@ -9,6 +9,7 @@ void MessagesHandler::ResolveMessage(const std::string& msg) {
         player->SetPocketCards(ResolvePocketCardsMessage(msg));
     }
     else if(msg.find("FLOP") != std::string::npos) {
+        std::cout<<"FLOP: "<<msg<<std::endl;
         player->SetFlopCards(ResolveFlopMessage(msg));
     }
     else if(msg.find("ANOTHER_CARD") != std::string::npos) {
@@ -42,7 +43,7 @@ std::vector<std::string> MessagesHandler::LiftCardsOutOfString(const std::string
     std::string::const_iterator end = msg.end();
     unsigned int index = 0;
     while (std::regex_search(start, end, match, pattern)) {
-        std::cout << "Znaleziono: " << match[1] << std::endl;
+        //std::cout << "Znaleziono: " << match[1] << std::endl;
         result.push_back(match[1]);
         start = match[0].second;
     }
@@ -51,4 +52,9 @@ std::vector<std::string> MessagesHandler::LiftCardsOutOfString(const std::string
 
 int MessagesHandler::ShellId(const std::string& msg) const {
     return std::stoi(LiftCardsOutOfString(msg)[0]);
+    //return 0;
+}
+
+void MessagesHandler::SetPlayer(Player* p) {
+    player = p;
 }
