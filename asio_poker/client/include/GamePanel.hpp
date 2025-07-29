@@ -2,8 +2,8 @@
 
 #include <wx/wx.h>
 #include "StatusPanel.hpp"
-
-class GamePanel {
+#include "SidePanel.hpp"
+class GamePanel: public wxPanel {
     public:
-        GamePanel();
+        GamePanel(wxWindow* parent);
 };  

@@ -4,8 +4,12 @@
 
 class StatusPanel: public wxPanel {
     public:
-        StatusPanel();
+        StatusPanel(wxWindow* parent, wxSize size,wxPoint pos);
     private:
         wxStaticText* statusLabel;
-        wxStatictext* moneyLabel;
+        wxStaticText* stakeLabel;
+        wxStaticText* nicknameLabel;
+        wxStaticText* nickname;
+        wxStaticText* status;
+        wxStaticText* stake;
 };
