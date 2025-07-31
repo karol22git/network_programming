@@ -10,6 +10,8 @@ class ActionPanel: public wxPanel {
         wxButton *raiseButton;
         wxStaticText *infoField;
         wxStaticBoxSizer *actionPanelSizer;
+        wxBoxSizer* miniSizer;
+        wxTextCtrl* textCtrl;
         void CreateButtons();
         void CreateInfoField();
         void ArrangeSizer();

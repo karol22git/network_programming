@@ -16,7 +16,7 @@ class UdpClient{
         void start_receive();
         void handle_receive(const boost::system::error_code& error,std::size_t /*bytes_transferred*/);
     private:
-    std::array<char,128> recv_buffer_;
+        std::array<char,128> recv_buffer_;
         udp::resolver resolver_;
         udp::socket socket_;
         udp::endpoint receiver_endpoint;
