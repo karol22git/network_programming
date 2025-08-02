@@ -1,8 +1,10 @@
 #include "../include/UdpClient.hpp"
+#include "../include/DebugConsole.hpp"
 #include <iostream>
 #include <array>
 #include <algorithm>
-UdpClient::UdpClient(const std::string& ip, const std::string& port,  boost::asio::io_context &io_context): resolver_(io_context), socket_(io_context),
+DebugConsole* UdpClient::debugConsole = nullptr;
+UdpClient::UdpClient(const std::string& ip, const std::string& port, boost::asio::io_context &io_context):resolver_(io_context), socket_(io_context),
  messagesHandler(new MessagesHandler()) {
         receiver_endpoint = *resolver_.resolve(udp::v4(),ip,port).begin();
         socket_.open(udp::v4());
@@ -17,8 +19,10 @@ bool UdpClient::Connect(const std::string& username, const std::string& password
     //return isConnectionAccepted(recv_buf);
     if(isConnectionAccepted(recv_buf)) {
         std::string msg(recv_buf.data(), len);
-        player = new Player(messagesHandler->ShellId(msg));
-        messagesHandler->SetPlayer(player);
+        //player = new Player(messagesHandler->ShellId(msg));
+        //messagesHandler->SetPlayer(player);
+        Player::Init(messagesHandler->ShellId(msg));
+        messagesHandler->SetPlayer(&Player::GetInstance());
         start_receive();
         return true;
     }
@@ -44,8 +48,16 @@ void UdpClient::start_receive() {
 void UdpClient::handle_receive(const boost::system::error_code& error,std::size_t bytes_transferred) {
     //std::cout<<"i got msg"<<std::endl;
     std::string msg(recv_buffer_.data(), bytes_transferred);
-    std::cout<<msg<<std::endl;
+    //std::cout<<msg<<std::endl;
+    if(debugConsole) debugConsole->LogMessage(msg);
     messagesHandler->ResolveMessage(msg);
     //std::cout << "after resolve" << std::endl;
     start_receive();
+}
+
+
+void UdpClient::SetDebugger(DebugConsole* dc) {
+    debugConsole = dc;
+    debugConsole->Show();
+    messagesHandler->SetDebugger(dc);
 }

@@ -1,4 +1,6 @@
 #include "../include/MessagesHandler.hpp"
+#include "../include/EffectManager.hpp"
+#include "../include/DrawingCanvas.hpp"
 #include <regex>
 #include <array>
 #include <iostream>
@@ -7,27 +9,32 @@ MessagesHandler::MessagesHandler() {}
 void MessagesHandler::ResolveMessage(const std::string& msg) {
     if(msg.find("POCKET_CARDS") != std::string::npos) {
         player->SetPocketCards(ResolvePocketCardsMessage(msg));
+        EffectManager::drawingCanvas->FillPocketCards(ResolvePocketCardsMessage(msg));
+       //for(auto c: ResolvePocketCardsMessage(msg)) debugConsole->LogMessage(resource_dir+c.toString());
+
     }
     else if(msg.find("FLOP") != std::string::npos) {
         std::cout<<"FLOP: "<<msg<<std::endl;
         player->SetFlopCards(ResolveFlopMessage(msg));
+        EffectManager::drawingCanvas->FillFlopCards(ResolveFlopMessage(msg));
     }
     else if(msg.find("ANOTHER_CARD") != std::string::npos) {
         player->AddExtraCard(ResolveAnotherCardMessage(msg));
+        EffectManager::drawingCanvas->AddAnotherCard(ResolveAnotherCardMessage(msg));
     }
 }
 
 std::array<struct Card, pocket_cards> MessagesHandler::ResolvePocketCardsMessage(const std::string& msg) const {
     std::array<struct Card, pocket_cards> result;
     auto v = LiftCardsOutOfString(msg);
-    for(unsigned int i  = 1 ; i < v.size() ;++i) result[i] = struct Card(v[i]);
+    for(unsigned int i  = 0 ; i < v.size() ;++i) result[i] = struct Card(v[i]);
     return result;
 }
 
 std::array<struct Card, flop_size> MessagesHandler::ResolveFlopMessage(const std::string& msg) const{
     std::array<struct Card, flop_size> result;
     auto v = LiftCardsOutOfString(msg);
-    for(unsigned int i  = 1 ; i < v.size() ;++i) result[i] = struct Card(v[i]);
+    for(unsigned int i  = 0 ; i < v.size() ;++i) result[i] = struct Card(v[i]);
     return result;
 }
 
@@ -57,4 +64,10 @@ int MessagesHandler::ShellId(const std::string& msg) const {
 
 void MessagesHandler::SetPlayer(Player* p) {
     player = p;
+}
+
+
+
+void MessagesHandler::SetDebugger(DebugConsole* db) {
+    debugConsole = db;
 }

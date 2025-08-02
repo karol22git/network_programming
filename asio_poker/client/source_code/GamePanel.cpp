@@ -1,5 +1,5 @@
 #include "../include/GamePanel.hpp"
-
+#include "../include/EffectManager.hpp"
 
 GamePanel::GamePanel(wxWindow* parent): wxPanel(parent,wxID_ANY,wxPoint(0,0),wxDefaultSize),sidePanelSize(250, 400) {
     CreateItems();
@@ -14,6 +14,7 @@ void GamePanel::CreateItems() {
     rightPanel = new RightSidePanel(this,sidePanelSize);
     //gameWindow = new wxPanel(this,wxID_ANY,wxDefaultPosition,wxSize(350,200));
     gameWindow = new DrawingCanvas(this,wxID_ANY,wxDefaultPosition,wxSize(350,200));
+    EffectManager::drawingCanvas = gameWindow;
 }
 
 void GamePanel::ArrangeItems() {

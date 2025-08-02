@@ -1,15 +1,13 @@
 #pragma once
 #include <wx/wx.h>
+#include "InfoPanel.hpp"
 
-
-class StatusPanel: public wxPanel {
+class StatusPanel: public InfoPanel{//public wxPanel {
     public:
-        StatusPanel(wxWindow* parent, wxSize size,wxPoint pos);
+        StatusPanel(wxWindow* parent, wxPoint pos, wxSize size, const std::string&);
+        void Arrange() override;
+        void CreateItems(const std::string&) override;
     private:
         wxStaticText* statusLabel;
-        wxStaticText* stakeLabel;
-        wxStaticText* nicknameLabel;
-        wxStaticText* nickname;
         wxStaticText* status;
-        wxStaticText* stake;
 };

@@ -1,6 +1,6 @@
 #include "../include/Player.hpp"
 
-
+Player* Player::instance = nullptr;
 Player::Player(unsigned int _id): id(_id), index(0){}
 
 void Player::SetPocketCards(const std::array<struct Card, pocket_cards> & _cards) {
@@ -26,4 +26,17 @@ void Player::Call() {
 void Player::AddExtraCard(const struct Card& c) {
     extraCards[index] = c;
     ++index;
+}
+
+Player& Player::GetInstance() {
+    //static Player instance(id);
+    return *instance;
+}
+
+void Player::Init(unsigned int id) {
+    instance = new Player(id);
+}
+
+unsigned int Player::GetId() const {
+    return id;
 }

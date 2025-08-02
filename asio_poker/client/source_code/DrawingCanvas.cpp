@@ -46,3 +46,24 @@ wxBitmap DrawingCanvas::FetchCardBitmap(const std::string& cardName) {
     image.LoadFile(resource_dir+ cardName +extension, wxBITMAP_TYPE_ANY);
     return wxBitmap(image);
 }
+
+void DrawingCanvas::FillPocketCards(const std::array<struct Card, pocket_cards>& c) {
+    for(unsigned int i = 0 ; i <pocket_cards ; ++i) {
+        pocketCards[i] = FetchCardBitmap(c[i].toString());
+    }
+    Refresh();
+}
+
+void DrawingCanvas::FillFlopCards(const std::array<struct Card, flop_size>& c) {
+    for(unsigned int i = 0 ; i <flop_size ; ++i) {
+        sharedCards[i] = FetchCardBitmap(c[i].toString());
+    }
+    Refresh();
+}
+
+void DrawingCanvas::AddAnotherCard(const struct Card c) {
+    static int index = 3;
+    sharedCards[index] = FetchCardBitmap(c.toString());
+    ++index;
+    Refresh();
+}

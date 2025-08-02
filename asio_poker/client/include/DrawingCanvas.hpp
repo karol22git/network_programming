@@ -7,6 +7,9 @@ class DrawingCanvas: public wxPanel {
     public:
         DrawingCanvas(wxWindow* parent, wxWindowID id, const wxPoint &pos, const wxSize &size);
         virtual ~DrawingCanvas(){}
+        void FillPocketCards(const std::array<struct Card, pocket_cards>&);
+        void FillFlopCards(const std::array<struct Card, flop_size>&);
+        void AddAnotherCard(const struct Card);
     private:
         const std::string extension = ".svg.png";
         std::string s;
@@ -21,8 +24,10 @@ class DrawingCanvas: public wxPanel {
         void DrawSharedCards(wxGraphicsContext *gc);
         void FillStructures();
         void LoadBasicTemplate();
+        //void FillPocketCards(const std::array<struct Card, pocket_cards>&);
+        //void FillFlopCards(const std::array<struct Card, flop_size>&);
+        //void AddAnotherCard(const struct Card);
         wxBitmap FetchCardBitmap(const std::string&);
         std::array<wxBitmap, pocket_cards> pocketCards = {};
         std::array<wxBitmap, flop_size + extra_cards_size> sharedCards = {};
-
 };

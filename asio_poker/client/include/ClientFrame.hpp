@@ -3,6 +3,7 @@
 #include "GamePanel.hpp"
 #include "ActionPanel.hpp"
 #include "StatusBar.hpp"
+#include "InfoPanel.hpp"
 class ClientFrame: public wxFrame {
     public:
         ClientFrame();
@@ -18,5 +19,6 @@ class ClientFrame: public wxFrame {
         wxBoxSizer* helperSizer;
         GamePanel* gp;
         ActionPanel* actionPanel;
-        StatusBar* statusBar;
+       // StatusBar* statusBar;
+       InfoPanel* statusBar;
 };

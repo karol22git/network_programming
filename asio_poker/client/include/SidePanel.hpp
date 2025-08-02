@@ -1,15 +1,16 @@
 #pragma once
 #include <wx/wx.h>
 #include "StatusPanel.hpp"
-
+#include "InfoPanel.hpp"
 class SidePanel: public wxPanel {
     public:
         SidePanel(wxWindow*, wxSize);
         virtual void ArrangePanel() = 0;
+        void AddStatusPanelToEffectManager(InfoPanel*);
     protected:
         wxWindow* parent;
         wxSize size;
-        StatusPanel* playerStatusPanelA;
-        StatusPanel* playerStatusPanelB;
+        InfoPanel* playerStatusPanelA;
+        InfoPanel* playerStatusPanelB;
         wxPanel *handlerPanel;
 };

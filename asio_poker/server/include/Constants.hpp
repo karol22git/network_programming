@@ -6,7 +6,8 @@ const unsigned int pocket_cards = 2;
 const unsigned int flop_size = 3;
 const unsigned int extra_cards_size = 2;
 const unsigned int start_cash = 500;
-const unsigned int quorum = 2;
+const unsigned int quorum = 1;
+const unsigned int start_money = 500;
 const std::string resource_dir = "../resources/";
 const std::string otherside_card_file = "back.png";
 enum Color {
