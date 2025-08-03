@@ -4,7 +4,7 @@
 #include <regex>
 #include <array>
 #include <iostream>
-MessagesHandler::MessagesHandler() {}
+MessagesHandler::MessagesHandler(): effectManager(new EffectManager()) {}
 
 void MessagesHandler::ResolveMessage(const std::string& msg) {
     if(msg.find("POCKET_CARDS") != std::string::npos) {
@@ -21,6 +21,9 @@ void MessagesHandler::ResolveMessage(const std::string& msg) {
     else if(msg.find("ANOTHER_CARD") != std::string::npos) {
         player->AddExtraCard(ResolveAnotherCardMessage(msg));
         EffectManager::drawingCanvas->AddAnotherCard(ResolveAnotherCardMessage(msg));
+    }
+    else if(msg.find("TURN") != std::string::npos) {
+        effectManager->HighlightCurrentPlayer(ShellId(msg));
     }
 }
 

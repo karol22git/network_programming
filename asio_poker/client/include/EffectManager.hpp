@@ -10,8 +10,8 @@ struct GameManagmentData {
 class EffectManager {
     public:
         EffectManager();
-        void DrawingCanvasEffect();
-        void GameManagmantEffect();
+        //void DrawingCanvasEffect();
+        //void GameManagmantEffect();
         void UpdateCurrentStake(const std::string&);
         void HighlightCurrentPlayer(const unsigned int);
         static DrawingCanvas* drawingCanvas;

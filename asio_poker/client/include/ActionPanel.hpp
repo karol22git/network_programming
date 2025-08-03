@@ -1,6 +1,6 @@
 #pragma once
 #include <wx/wx.h>
-
+#include "CommunicationHandler.hpp"
 class ActionPanel: public wxPanel {
     public:
         ActionPanel(wxWindow* parent, wxSize size);
@@ -15,4 +15,9 @@ class ActionPanel: public wxPanel {
         void CreateButtons();
         void CreateInfoField();
         void ArrangeSizer();
+        void AnyAction();
+        wxButton* GetCallButton() const;
+        wxButton* GetRaiseButton() const;
+        wxButton* GetPassButton() const;
+        CommunicationHandler* communicationHandler;
 };

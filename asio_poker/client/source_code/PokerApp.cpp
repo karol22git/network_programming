@@ -1,5 +1,6 @@
 #include "../include/PokerApp.hpp"
 #include "../include/DebugConsole.hpp"
+
 bool PokerApp::OnInit() {
     //moderator->GetGraphicsResources();
     wxInitAllImageHandlers();
@@ -19,7 +20,7 @@ void PokerApp::RunClient() {
         std::string port = "8080";
         //UdpClient* player = new UdpClient(ip, port, io_context);
        // UdpClient player = UdpClient(ip, port, io_context);
-        player = std::make_unique<UdpClient>(ip, port, io_context);
+        player = std::make_shared<UdpClient>(ip, port, io_context);
         //player->SetDebugger(new DebugConsole(appFrame));
         if(player->Connect(username, password)) {
           std::cout<<"sukces"<<std::endl;
@@ -33,6 +34,8 @@ void PokerApp::RunClient() {
                     std::cerr << "Network thread error: " << e.what() << std::endl;
                 }
             });
+            Mediator::Init();
+            Mediator::GetInstance().SetClient(player);
 
         }
         else {

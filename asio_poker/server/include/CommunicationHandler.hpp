@@ -9,5 +9,6 @@ class CommunicationHandler {
         std::string GeneratePocketCardsMessage(const struct Card& c1, const struct Card& c2) const;
         std::string GenerateFlopMessage(const struct Card& c1, const struct Card& c2, const struct Card& c3) const;
         std::string GenerateAnotherCardMessage(const struct Card& c) const;
+        std::string GenerateTurnMessage(unsigned int _id) const;
 };
 

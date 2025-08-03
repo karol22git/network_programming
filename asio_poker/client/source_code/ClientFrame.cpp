@@ -2,6 +2,7 @@
 #include "../include/ActionPanel.hpp"
 #include "../include/StatusBar.hpp"
 #include "../include/EffectManager.hpp"
+#include "../include/Player.hpp"
 ClientFrame::ClientFrame() :wxFrame(NULL,wxID_ANY,wxString("Poker"),wxDefaultPosition,wxSize(800,400),wxDEFAULT_FRAME_STYLE & ~wxRESIZE_BORDER) {
     CreateItems();
     ArrangeComponent();
@@ -13,6 +14,7 @@ void ClientFrame::CreateItems() {
     gp =  new GamePanel(this);
     actionPanel = new ActionPanel(this,wxSize(actionPanelWidth,actionPanelHeight));
     statusBar = new StatusBar(this,wxDefaultPosition, wxSize(statusBarWidth,statusBarHeight), "hello");
+    statusBar->SetId(Player::GetInstance().GetId());
     helperSizer = new wxBoxSizer(wxHORIZONTAL);
 
     EffectManager::players.push_back(statusBar);

@@ -6,7 +6,7 @@ const unsigned int pocket_cards = 2;
 const unsigned int flop_size = 3;
 const unsigned int extra_cards_size = 2;
 const unsigned int start_cash = 500;
-const unsigned int quorum = 1;
+const unsigned int quorum = 3;
 const unsigned int start_money = 500;
 const std::string resource_dir = "../resources/";
 const std::string otherside_card_file = "back.png";
@@ -24,6 +24,7 @@ enum MessageType {
     RAISE,
     CALL,
     PASS,
+    TURN,
     MSG_ERROR
 };
 
@@ -45,7 +46,9 @@ inline MessageType GetMessageType(const std::string& msg) {
         {"[ANOTHER_CARD]",MessageType::ANOTHER_CARD},
         {"[RAISE]",MessageType::RAISE},
         {"[CALL]",MessageType::CALL},
-        {"[PASS]",MessageType::PASS}};
+        {"[PASS]",MessageType::PASS},
+        {"[TURN]",MessageType::TURN} 
+    };
 
     for(const auto& [key,value]: tmpMap) {
         if(msg.find(key) != std::string::npos) return value;

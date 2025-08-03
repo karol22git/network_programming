@@ -1,10 +1,12 @@
 #include "../include/ActionPanel.hpp"
-
+#include "../include/Mediator.hpp"
 ActionPanel::ActionPanel(wxWindow* parent, wxSize size) : wxPanel(parent,wxID_ANY,wxPoint(0,0),size) {
     CreateButtons();
     CreateInfoField();
     ArrangeSizer();
     SetSizerAndFit(actionPanelSizer);
+    callButton->Bind(wxEVT_BUTTON, &CommunicationHandler::SendAnyAction, communicationHandler);
+    Mediator::GetInstance().SetActionPanel(this);
 }
 
 void ActionPanel::CreateButtons() {
@@ -27,3 +29,15 @@ void ActionPanel::ArrangeSizer() {
     actionPanelSizer->Add(callButton,0,wxALL,10);
 }
 
+
+wxButton* ActionPanel::GetCallButton() const {
+    return callButton;
+}
+
+wxButton* ActionPanel::GetRaiseButton() const {
+    return raiseButton;
+}
+
+wxButton* ActionPanel::GetPassButton() const {
+    return passButton;
+}

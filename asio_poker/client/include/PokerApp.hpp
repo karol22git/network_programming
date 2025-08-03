@@ -4,6 +4,7 @@
 #include <memory>
 #include <thread>
 #include "../include/ClientFrame.hpp"
+#include "Mediator.hpp"
 class PokerApp: public wxApp{
     public:
         bool OnInit() override;
@@ -18,6 +19,7 @@ class PokerApp: public wxApp{
     private:
         ClientFrame* appFrame;
         boost::asio::io_context io_context;
-        std::unique_ptr<UdpClient> player;
+        std::shared_ptr<UdpClient> player;
         std::thread network_thread;
+        Mediator* mediator;
 };

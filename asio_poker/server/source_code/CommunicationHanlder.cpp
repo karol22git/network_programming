@@ -16,6 +16,8 @@ std::string CommunicationHandler::MessageTypeToString(MessageType type) const {
             return "CALL";
         case 6:
             return "PASS";
+        case 7:
+            return "TURN";
         default:
             return "ERROR";
     }
@@ -41,6 +43,14 @@ std::string CommunicationHandler::GenerateAnotherCardMessage(const struct Card& 
     MessageBuilder mb;
     std::string msg = mb.SetHeader(MessageTypeToString(MessageType::ANOTHER_CARD))
     .SetParams(c.toString())
+    .Build();
+    return msg;
+}
+
+std::string CommunicationHandler::GenerateTurnMessage(unsigned int _id) const {
+    MessageBuilder mb;
+    std::string msg = mb.SetHeader(MessageTypeToString(MessageType::TURN))
+    .SetParams(std::to_string(_id))
     .Build();
     return msg;
 }

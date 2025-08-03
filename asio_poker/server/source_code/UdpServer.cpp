@@ -104,6 +104,7 @@ void UdpServer::StartGame() {
     //auto msg_ptr = std::make_shared<std::string>(msg);
     //SendMessage("hello");
     SendFlop();
+    BroadcastTurn();
 }
 
 void UdpServer::SendPocketCards() {
@@ -122,6 +123,14 @@ void UdpServer::SendFlop() {
         SendMessage(msg, value.remote_endpoint);
     }
 }
+
+void UdpServer::BroadcastTurn() {
+    auto msg = communicationHandler->GenerateTurnMessage(0);
+     for(const auto& [key, value] : players) {
+        SendMessage(msg, value.remote_endpoint);
+    }
+}
+
 
 void UdpServer::SendMessage(const std::string& msg, udp::endpoint endpoint) {
     logger->MessageSend(endpoint.address().to_string(), endpoint.port(), msg);

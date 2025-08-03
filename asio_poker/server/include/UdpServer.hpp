@@ -50,6 +50,7 @@ class UdpServer {
         void SendPocketCards();
         void SendFlop();
         void AcceptConnection();
+        void BroadcastTurn();
         udp::socket socket_;
         udp::endpoint remote_endpoint_;
         std::array<char, 128> recv_buffer_;
