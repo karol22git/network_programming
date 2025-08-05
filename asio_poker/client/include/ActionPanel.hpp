@@ -4,6 +4,9 @@
 class ActionPanel: public wxPanel {
     public:
         ActionPanel(wxWindow* parent, wxSize size);
+        wxButton* GetCallButton() const;
+        wxButton* GetRaiseButton() const;
+        wxButton* GetPassButton() const;
     private:
         wxButton *callButton;
         wxButton *passButton;
@@ -15,9 +18,5 @@ class ActionPanel: public wxPanel {
         void CreateButtons();
         void CreateInfoField();
         void ArrangeSizer();
-        void AnyAction();
-        wxButton* GetCallButton() const;
-        wxButton* GetRaiseButton() const;
-        wxButton* GetPassButton() const;
         CommunicationHandler* communicationHandler;
 };

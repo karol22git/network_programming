@@ -14,7 +14,7 @@ MessageBuilder& MessageBuilder::SetParams(const std::string& _params) {
 }
 
 MessageBuilder& MessageBuilder::SetId(const unsigned int _id) {
-    this->id = _id;
+    this->id = std::to_string(_id);
     return *this;
 }
 

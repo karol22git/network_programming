@@ -36,6 +36,8 @@ class UdpServer {
     public:
         UdpServer(boost::asio::io_context &io_context);
         bool isNewPlayerTryingToConnect(const std::array<char,128>& msg) const;
+        void BroadcastTurn();
+        void BroadcastMessage(const std::string& msg);
     private:
         void SendMessage(const std::string&);
         void SendMessage(const std::string&, udp::endpoint);
@@ -50,12 +52,12 @@ class UdpServer {
         void SendPocketCards();
         void SendFlop();
         void AcceptConnection();
-        void BroadcastTurn();
+        //void BroadcastTurn();
         udp::socket socket_;
         udp::endpoint remote_endpoint_;
         std::array<char, 128> recv_buffer_;
         Logger* logger = nullptr;
-        std::string im = "gwn";
+        //std::string im = "gwn";
         unsigned int nextID = 0;
         struct Messages infoMessages;
         struct TransferredMessageData mData;

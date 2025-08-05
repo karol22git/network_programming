@@ -1,7 +1,7 @@
 #include "../include/Player.hpp"
 
 
-Player::Player(unsigned int _id): id(_id) {
+Player::Player(unsigned int _id): id(_id), alive(true) {
 
 }
 
@@ -15,4 +15,12 @@ std::array<struct Card, pocket_cards> Player::GetPocketCards() const {
 
 unsigned int Player::GetId() const {
     return id;
+}
+
+bool Player::isAlive() const {
+    return alive;
+}
+
+void Player::Kill() {
+    alive = false;
 }

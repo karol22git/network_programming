@@ -10,9 +10,13 @@ class Mediator{
         static Mediator* instance;
         void SetClient(std::shared_ptr<UdpClient>);
         void SetActionPanel(ActionPanel*);
+        void Pass(wxCommandEvent& event);
+        void Raise(wxCommandEvent& event);
+        void Call(wxCommandEvent& event);
     private:
         Mediator();
+        void Bind();
         std::shared_ptr<UdpClient> client;
         ActionPanel* actionPanel;
-
+        CommunicationHandler* communicationHandler; 
 };

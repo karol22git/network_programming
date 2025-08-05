@@ -2,7 +2,7 @@
 
 
 InfoPanel::InfoPanel(wxWindow* parent, wxPoint pos, wxSize size): wxPanel(parent, wxID_ANY, pos, size) {
-
+    SetBackgroundColour(*wxLIGHT_GREY);
 }
 
 void InfoPanel::SetStake(const std::string& newStake) {

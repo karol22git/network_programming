@@ -11,8 +11,10 @@ class Player {
         void AcceptCards(std::array<struct Card, pocket_cards>);
         std::array<struct Card, pocket_cards> GetPocketCards() const;
         unsigned int GetId() const;
+        bool isAlive() const;
+        void Kill();
     private:
         std::array<struct Card, pocket_cards> cards;
         unsigned int id;
-
+        bool alive;
 };

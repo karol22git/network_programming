@@ -61,3 +61,19 @@ void UdpClient::SetDebugger(DebugConsole* dc) {
     debugConsole->Show();
     messagesHandler->SetDebugger(dc);
 }
+
+
+void UdpClient::SendMessage(const std::string& msg) {
+    debugConsole->LogMessage(msg);
+    auto msg_ptr = std::make_shared<std::string>(msg);
+    socket_.async_send_to(boost::asio::buffer(*msg_ptr),  receiver_endpoint,
+        std::bind(&UdpClient::handle_send, this, msg_ptr,
+        boost::asio::placeholders::error,
+        boost::asio::placeholders::bytes_transferred));
+}
+
+void UdpClient::handle_send(std::shared_ptr<std::string> message, 
+    const boost::system::error_code& error,
+    std::size_t bytes_transferred) {
+
+}

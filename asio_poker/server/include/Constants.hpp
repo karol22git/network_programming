@@ -25,6 +25,7 @@ enum MessageType {
     CALL,
     PASS,
     TURN,
+    MSG_EXIT,
     MSG_ERROR
 };
 
@@ -47,7 +48,8 @@ inline MessageType GetMessageType(const std::string& msg) {
         {"[RAISE]",MessageType::RAISE},
         {"[CALL]",MessageType::CALL},
         {"[PASS]",MessageType::PASS},
-        {"[TURN]",MessageType::TURN} 
+        {"[TURN]",MessageType::TURN},
+        {"[EXIT]", MessageType::MSG_EXIT}
     };
 
     for(const auto& [key,value]: tmpMap) {

@@ -18,6 +18,10 @@ class UdpClient{
         void handle_receive(const boost::system::error_code& error,std::size_t /*bytes_transferred*/);
         static DebugConsole* debugConsole ;
         void SetDebugger(DebugConsole*);
+        void SendMessage(const std::string& msg);
+        void handle_send(std::shared_ptr<std::string> message, 
+            const boost::system::error_code& error,
+            std::size_t bytes_transferred);
     private:
         //boost::asio::io_context io_context;
         //static DebugConsole* debugConsole ;

@@ -14,7 +14,7 @@ void EffectManager::UpdateCurrentStake(const std::string& newStake) {
 
 void EffectManager::HighlightCurrentPlayer(unsigned int _id) {
     auto lastPlayer = GetPlayerById(gmData.lastPlayerId);
-    lastPlayer->SetBackgroundColour(*wxWHITE);
+    lastPlayer->SetBackgroundColour(*wxLIGHT_GREY);
 
     auto currentPlayer = GetPlayerById(_id);
     currentPlayer->SetBackgroundColour(*wxGREEN);
@@ -27,7 +27,7 @@ void EffectManager::HighlightCurrentPlayer(unsigned int _id) {
 
 InfoPanel* EffectManager::GetPlayerById(unsigned int _id) const {
     for(auto p: players) {
-        if(p->GetId() == gmData.lastPlayerId) {
+        if(p->GetId() == _id){//gmData.lastPlayerId) {
             return p;
         }
     }

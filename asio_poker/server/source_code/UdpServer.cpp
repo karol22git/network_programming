@@ -4,8 +4,9 @@
 #include <chrono>
 
 UdpServer::UdpServer(boost::asio::io_context &io_context) :socket_(io_context,udp::endpoint(udp::v4(),8080)), moderator(new Moderator()), logger(new Logger()),
-    communicationHandler(new CommunicationHandler) {
+    communicationHandler(new CommunicationHandler(this)) {
     start_receive();
+    communicationHandler->SetModerator(moderator);
     //logger = new Logger();
 }
 
@@ -24,21 +25,16 @@ void UdpServer::handle_receive(const boost::system::error_code& error,std::size_
             HandleNewConnection();
         }
         else {
-            auto msg_ptr = std::make_shared<std::string>(im);
-            socket_.async_send_to(boost::asio::buffer(*msg_ptr), remote_endpoint_,
-            std::bind(&UdpServer::handle_send, this, msg_ptr,
-            boost::asio::placeholders::error,
-            boost::asio::placeholders::bytes_transferred));
+            //auto msg_ptr = std::make_shared<std::string>(im);
+            //socket_.async_send_to(boost::asio::buffer(*msg_ptr), remote_endpoint_,
+            //std::bind(&UdpServer::handle_send, this, msg_ptr,
+            //boost::asio::placeholders::error,
+            //boost::asio::placeholders::bytes_transferred));
+            communicationHandler->HandleNormalMessage(std::string(recv_buffer_.data(), bytes_transferred));
         }
     }
         start_receive();
 }
-
-//void UdpServer::handle_send(std::string message, 
-//    const boost::system::error_code& error,
-//    std::size_t bytes_transferred) {
-//
-//}
 
 void UdpServer::handle_send(std::shared_ptr<std::string> message, 
     const boost::system::error_code& error,
@@ -125,7 +121,7 @@ void UdpServer::SendFlop() {
 }
 
 void UdpServer::BroadcastTurn() {
-    auto msg = communicationHandler->GenerateTurnMessage(0);
+    auto msg = communicationHandler->GenerateTurnMessage(moderator->WhosTurn());
      for(const auto& [key, value] : players) {
         SendMessage(msg, value.remote_endpoint);
     }
@@ -139,4 +135,11 @@ void UdpServer::SendMessage(const std::string& msg, udp::endpoint endpoint) {
         std::bind(&UdpServer::handle_send, this, msg_ptr,
         boost::asio::placeholders::error,
         boost::asio::placeholders::bytes_transferred));
+}
+
+
+void UdpServer::BroadcastMessage(const std::string& msg) {
+     for(const auto& [key, value] : players) {
+        SendMessage(msg, value.remote_endpoint);
+    }
 }
