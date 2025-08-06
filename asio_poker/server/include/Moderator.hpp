@@ -13,6 +13,7 @@ class Moderator {
         void FetchFlop();
         std::array<struct Card, flop_size> GetFlop() const;
         int WhosTurn() const;
+        int CurrentTurn() const;
         bool isWonBySurrender() const;
         int GetLastAlivePlayerId() const;
         void Kill(unsigned int);

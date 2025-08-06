@@ -19,6 +19,10 @@ std::string CommunicationHandler::MessageTypeToString(MessageType type) const {
             return "PASS";
         case 7:
             return "TURN";
+        case 8 :
+            return "EXIT";
+        case 9:
+            return "FORCED";
         default:
             return "ERROR";
     }
@@ -58,6 +62,8 @@ std::string CommunicationHandler::GenerateTurnMessage(unsigned int _id) const {
 
 void CommunicationHandler::HandleNormalMessage(const std::string& msg)  {
     MessageType msgType = GetMessageType(msg);
+    int messageAutorId = ShellId(msg);
+    if(msgType != MessageType::FORCED && messageAutorId != moderator->CurrentTurn()) return;
     switch(msgType) {
         case MessageType::RAISE:
 
@@ -71,6 +77,11 @@ void CommunicationHandler::HandleNormalMessage(const std::string& msg)  {
             break;
         case MessageType::MSG_EXIT:
             moderator->Kill(ShellId(msg));
+            break;
+        case MessageType::FORCED:
+            if(messageAutorId == moderator->CurrentTurn())moderator->WhosTurn();
+            moderator->Kill(ShellId(msg));
+            parent->BroadcastMessage(GenerateKillMessage(ShellId(msg)));
             break;
         default:
             break;
@@ -89,7 +100,7 @@ int CommunicationHandler::ShellId(const std::string& msg) const {
     std::regex rgx("\\|(.*?)\\|");
     std::smatch match;
     while (std::regex_search(msg, match, rgx)) {
-        return std::atoi(match[1]);
+        return std::stoi(match[1]);
         std::cout << match[1] << std::endl;
     }
     return -1;

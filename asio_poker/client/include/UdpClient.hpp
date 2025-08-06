@@ -22,6 +22,7 @@ class UdpClient{
         void handle_send(std::shared_ptr<std::string> message, 
             const boost::system::error_code& error,
             std::size_t bytes_transferred);
+        void SendForcedExitMessage();
     private:
         //boost::asio::io_context io_context;
         //static DebugConsole* debugConsole ;
@@ -31,6 +32,7 @@ class UdpClient{
         udp::endpoint receiver_endpoint;
         udp::endpoint sender_endpoint;
         const std::string acceptedTemplate = "[ACCEPTED]";
+        const std::string forcedExitTemplate = "[FORCED]";
         struct Messages infoMessages;
         Player* player;
         MessagesHandler* messagesHandler;

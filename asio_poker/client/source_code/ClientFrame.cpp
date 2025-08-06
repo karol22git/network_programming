@@ -3,10 +3,13 @@
 #include "../include/StatusBar.hpp"
 #include "../include/EffectManager.hpp"
 #include "../include/Player.hpp"
-ClientFrame::ClientFrame() :wxFrame(NULL,wxID_ANY,wxString("Poker"),wxDefaultPosition,wxSize(800,400),wxDEFAULT_FRAME_STYLE & ~wxRESIZE_BORDER) {
+#include "../include/PokerApp.hpp"
+ClientFrame::ClientFrame(PokerApp * parent) :wxFrame(NULL,wxID_ANY,wxString("Poker"),wxDefaultPosition,wxSize(800,400),wxDEFAULT_FRAME_STYLE & ~wxRESIZE_BORDER), app(parent) {
     CreateItems();
     ArrangeComponent();
     SetSizerAndFit(mainSizer);
+    Bind(wxEVT_CLOSE_WINDOW, &ClientFrame::OnClose, this);
+
 }
 
 void ClientFrame::CreateItems() {
@@ -25,4 +28,9 @@ void ClientFrame::ArrangeComponent() {
     helperSizer->Add(statusBar,0,wxALL,margin);
     helperSizer->Add(actionPanel,0,wxALL,margin);
     mainSizer->Add(helperSizer,0, wxALL, margin);
+}
+
+void ClientFrame::OnClose(wxCloseEvent& event) {
+    app->Shutdown(); // wywołaj własną logikę
+    event.Skip();    // pozwól wxWidgets kontynuować zamykanie
 }

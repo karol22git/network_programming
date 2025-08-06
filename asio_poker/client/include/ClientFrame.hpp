@@ -4,12 +4,15 @@
 #include "ActionPanel.hpp"
 #include "StatusBar.hpp"
 #include "InfoPanel.hpp"
+class PokerApp;
 class ClientFrame: public wxFrame {
     public:
-        ClientFrame();
+        ClientFrame(PokerApp*);
         void CreateItems();
         void ArrangeComponent();
+        void OnClose(wxCloseEvent& event) ;
     private:
+        PokerApp* app;
         const int actionPanelWidth = 800;
         const int actionPanelHeight = 100;
         const int statusBarWidth = 200;

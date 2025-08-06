@@ -33,3 +33,9 @@ InfoPanel* EffectManager::GetPlayerById(unsigned int _id) const {
     }
     return nullptr;
 }
+
+void EffectManager::Kill(const unsigned int _id) {
+    auto player = GetPlayerById(_id);
+    player->SetBackgroundColour(*wxRED);
+    player->Refresh();
+}

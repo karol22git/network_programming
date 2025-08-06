@@ -24,3 +24,4 @@ std::string MessageBuilder::Build() const{
     result  += "]";
     return result;
 }
+

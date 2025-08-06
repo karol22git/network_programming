@@ -29,6 +29,10 @@ int Moderator::WhosTurn() const{
     return turnManager->GetNextTurn();
 }
 
+int Moderator::CurrentTurn() const {
+    return turnManager->CurrentTurn();
+}
+
 bool Moderator::isWonBySurrender() const {
     unsigned int counter = 0;
     for(auto const p: players) {

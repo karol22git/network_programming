@@ -5,7 +5,7 @@ bool PokerApp::OnInit() {
     //moderator->GetGraphicsResources();
     wxInitAllImageHandlers();
     RunClient();
-    appFrame = new ClientFrame();
+    appFrame = new ClientFrame(this);
     player->SetDebugger(new DebugConsole(appFrame));
     appFrame->Show(); 
     return true;
@@ -49,9 +49,17 @@ void PokerApp::RunClient() {
 }
 
 int PokerApp::OnExit() {
+    //player->SendForcedExitMessage();
+    //std::this_thread::sleep_for(std::chrono::milliseconds(5000));
     io_context.stop();
     if (network_thread.joinable()) {
         network_thread.join();
     }
     return wxApp::OnExit();
+}
+
+
+void PokerApp::Shutdown() {
+    player->SendForcedExitMessage();
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 }

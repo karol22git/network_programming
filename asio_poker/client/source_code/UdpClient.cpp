@@ -3,6 +3,8 @@
 #include <iostream>
 #include <array>
 #include <algorithm>
+#include <thread>
+#include <chrono>
 DebugConsole* UdpClient::debugConsole = nullptr;
 UdpClient::UdpClient(const std::string& ip, const std::string& port, boost::asio::io_context &io_context):resolver_(io_context), socket_(io_context),
  messagesHandler(new MessagesHandler()) {
@@ -76,4 +78,12 @@ void UdpClient::handle_send(std::shared_ptr<std::string> message,
     const boost::system::error_code& error,
     std::size_t bytes_transferred) {
 
+}
+
+void UdpClient::SendForcedExitMessage() {
+    //const std::string msg = "siema";
+    auto id = Player::GetInstance().GetId();
+    const std::string msg = forcedExitTemplate + "|" + std::to_string(id)+"|";
+    debugConsole->LogMessage(msg);
+    socket_.send_to(boost::asio::buffer(msg), receiver_endpoint);
 }

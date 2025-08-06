@@ -13,6 +13,7 @@ class MessagesHandler {
         std::array<struct Card, pocket_cards> ResolvePocketCardsMessage(const std::string&) const;
         std::array<struct Card, flop_size> ResolveFlopMessage(const std::string&) const;
         struct Card ResolveAnotherCardMessage(const std::string&) const;
+        void ResolveKillMessage(const std::string&);
         int ShellId(const std::string&) const;
         void SetDebugger(DebugConsole* db);
     private:

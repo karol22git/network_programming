@@ -9,6 +9,7 @@ class PokerApp: public wxApp{
     public:
         bool OnInit() override;
         void RunClient();
+        void Shutdown();
         int OnExit() override;
         ~PokerApp() {
             io_context.stop();

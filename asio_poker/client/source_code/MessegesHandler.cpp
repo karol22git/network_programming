@@ -25,6 +25,9 @@ void MessagesHandler::ResolveMessage(const std::string& msg) {
     else if(msg.find("TURN") != std::string::npos) {
         effectManager->HighlightCurrentPlayer(ShellId(msg));
     }
+    else if(msg.find("EXIT") != std::string::npos) {
+        effectManager->Kill(ShellId(msg));
+    }
 }
 
 std::array<struct Card, pocket_cards> MessagesHandler::ResolvePocketCardsMessage(const std::string& msg) const {
@@ -73,4 +76,8 @@ void MessagesHandler::SetPlayer(Player* p) {
 
 void MessagesHandler::SetDebugger(DebugConsole* db) {
     debugConsole = db;
+}
+
+void MessagesHandler::ResolveKillMessage(const std::string& msg) {
+    auto _id = ShellId(msg);
 }

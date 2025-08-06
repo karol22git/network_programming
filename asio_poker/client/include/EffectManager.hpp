@@ -14,6 +14,7 @@ class EffectManager {
         //void GameManagmantEffect();
         void UpdateCurrentStake(const std::string&);
         void HighlightCurrentPlayer(const unsigned int);
+        void Kill(const unsigned int);
         static DrawingCanvas* drawingCanvas;
         static std::vector<InfoPanel*> players;
     private:

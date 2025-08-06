@@ -12,3 +12,8 @@ int TurnManager::GetNextTurn() {
     }
     return 0;
 }
+
+int TurnManager::CurrentTurn() const {
+    if(nextId == -1) return 0;
+    else return nextId;
+}

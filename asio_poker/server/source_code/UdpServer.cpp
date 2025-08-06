@@ -25,11 +25,6 @@ void UdpServer::handle_receive(const boost::system::error_code& error,std::size_
             HandleNewConnection();
         }
         else {
-            //auto msg_ptr = std::make_shared<std::string>(im);
-            //socket_.async_send_to(boost::asio::buffer(*msg_ptr), remote_endpoint_,
-            //std::bind(&UdpServer::handle_send, this, msg_ptr,
-            //boost::asio::placeholders::error,
-            //boost::asio::placeholders::bytes_transferred));
             communicationHandler->HandleNormalMessage(std::string(recv_buffer_.data(), bytes_transferred));
         }
     }

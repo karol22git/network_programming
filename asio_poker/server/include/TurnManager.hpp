@@ -6,6 +6,7 @@ class TurnManager {
     public:
         TurnManager(std::vector<Player*>&);
         int GetNextTurn();
+        int CurrentTurn() const;
     private:
     int nextId;
     std::vector<Player*> players;
