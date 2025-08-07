@@ -4,6 +4,7 @@
 #include "ActionPanel.hpp"
 #include "StatusBar.hpp"
 #include "InfoPanel.hpp"
+#include "BindPanel.hpp"
 class PokerApp;
 class ClientFrame: public wxFrame {
     public:
@@ -22,6 +23,8 @@ class ClientFrame: public wxFrame {
         wxBoxSizer* helperSizer;
         GamePanel* gp;
         ActionPanel* actionPanel;
+        BindPanel* bindPanel;
+
        // StatusBar* statusBar;
        InfoPanel* statusBar;
 };

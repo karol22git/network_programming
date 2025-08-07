@@ -1,5 +1,5 @@
 #include "../include/UdpServer.hpp"
-
+#include "../include/CommunicationHandler.hpp"
 #include <thread>
 #include <chrono>
 
@@ -55,8 +55,8 @@ void UdpServer::AcceptConnection() {
     players[new_player.id] = new_player;
     ++nextID;
     SendMessage(infoMessages.ACCEPTED + "{" + std::to_string(new_player.id) +"}");
-
-
+    //if(new_player.id == 0) SendMessage(CommunicationHandler::GenerateSmallBindMessage());
+    //else if(new_player.id == quorum - 1) SendMessage(CommunicationHandler::GenerateBigBindMessage());
     moderator->CreateNewPlayer(new_player.id);
     auto condition = CheckForQuorum();
     if(condition) StartGame();
@@ -96,6 +96,7 @@ void UdpServer::StartGame() {
     //SendMessage("hello");
     SendFlop();
     BroadcastTurn();
+    BroadcastBlinds();
 }
 
 void UdpServer::SendPocketCards() {
@@ -137,4 +138,10 @@ void UdpServer::BroadcastMessage(const std::string& msg) {
      for(const auto& [key, value] : players) {
         SendMessage(msg, value.remote_endpoint);
     }
+}
+
+void UdpServer::BroadcastBlinds() {
+    auto msg = communicationHandler->GenerateSmallBindMessage();
+    SendMessage(msg,players[0].remote_endpoint);
+
 }

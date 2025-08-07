@@ -9,12 +9,14 @@ class UdpServer;
 class CommunicationHandler {
     public:
         CommunicationHandler(UdpServer*);
-        std::string MessageTypeToString(MessageType type) const;
+        static std::string MessageTypeToString(MessageType type) ;
         std::string GeneratePocketCardsMessage(const struct Card& c1, const struct Card& c2) const;
         std::string GenerateFlopMessage(const struct Card& c1, const struct Card& c2, const struct Card& c3) const;
         std::string GenerateAnotherCardMessage(const struct Card& c) const;
         std::string GenerateTurnMessage(unsigned int _id) const;
         std::string GenerateKillMessage(unsigned int _id) const;
+        static std::string GenerateSmallBindMessage() ;
+        static std::string GenerateBigBindMessage() ;
         void HandleNormalMessage(const std::string&);
         void SetModerator(Moderator*);
         void Just();

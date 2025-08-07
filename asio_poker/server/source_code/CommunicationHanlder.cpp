@@ -3,7 +3,7 @@
 #include "../include/UdpServer.hpp"
 CommunicationHandler::CommunicationHandler(UdpServer* _parent) {parent = _parent;}
 
-std::string CommunicationHandler::MessageTypeToString(MessageType type) const {
+std::string CommunicationHandler::MessageTypeToString(MessageType type)  {
     switch(type) {
         case 1:
             return "POCKET_CARDS";
@@ -23,6 +23,10 @@ std::string CommunicationHandler::MessageTypeToString(MessageType type) const {
             return "EXIT";
         case 9:
             return "FORCED";
+        case 10:
+            return "SMALL_BIND";
+        case 11:
+            return "BIG_BIND";
         default:
             return "ERROR";
     }
@@ -110,6 +114,22 @@ std::string CommunicationHandler::GenerateKillMessage(unsigned int _id) const {
     MessageBuilder mb;
     auto msg = mb.SetHeader(MessageTypeToString(MessageType::MSG_EXIT))
     .SetParams(std::to_string(_id))
+    .Build();
+    return msg;
+}
+
+std::string CommunicationHandler::GenerateSmallBindMessage() {
+    MessageBuilder mb;
+    auto msg = mb.SetHeader(MessageTypeToString(MessageType::SMALL_BIND))
+    .SetParams(std::to_string(0))
+    .Build();
+    return msg;
+}
+
+std::string CommunicationHandler::GenerateBigBindMessage() {
+    MessageBuilder mb;
+    auto msg = mb.SetHeader(MessageTypeToString(MessageType::BIG_BIND))
+    .SetParams(std::to_string(quorum -1))
     .Build();
     return msg;
 }

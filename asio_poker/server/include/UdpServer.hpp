@@ -38,6 +38,7 @@ class UdpServer {
         bool isNewPlayerTryingToConnect(const std::array<char,128>& msg) const;
         void BroadcastTurn();
         void BroadcastMessage(const std::string& msg);
+        void BroadcastBlinds();
     private:
         void SendMessage(const std::string&);
         void SendMessage(const std::string&, udp::endpoint);

@@ -7,7 +7,19 @@ class ActionPanel: public wxPanel {
         wxButton* GetCallButton() const;
         wxButton* GetRaiseButton() const;
         wxButton* GetPassButton() const;
+       // void CreateSmallBlindPanel();
+       void HideAll();
+       void ShowAll();
+       void SetUpSmallBlind();
+       void HideMiniSizer();
+       void test();
     private:
+        wxPanel* placeholder;
+        wxTextCtrl* blindTextCtrl;
+        wxButton* blindButton;
+        wxStaticText* blindInfoField;
+        wxStaticText* blindLabel;
+        wxBoxSizer* blindSizer;
         wxButton *callButton;
         wxButton *passButton;
         wxButton *raiseButton;

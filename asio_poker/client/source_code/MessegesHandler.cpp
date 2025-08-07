@@ -28,6 +28,12 @@ void MessagesHandler::ResolveMessage(const std::string& msg) {
     else if(msg.find("EXIT") != std::string::npos) {
         effectManager->Kill(ShellId(msg));
     }
+    else if(msg.find("SMALL_BIND") != std::string::npos) {
+        effectManager->SwapToSmallBlind();
+    }
+    else if(msg.find("BIG_BIND") != std::string::npos) {
+        
+    }
 }
 
 std::array<struct Card, pocket_cards> MessagesHandler::ResolvePocketCardsMessage(const std::string& msg) const {

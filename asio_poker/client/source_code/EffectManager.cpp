@@ -1,7 +1,11 @@
 #include "../include/EffectManager.hpp"
 #include "../include/InfoPanel.hpp"
+#include "../include/ActionPanel.hpp"
+#include <wx/utils.h>
+#include <wx/thread.h>
 DrawingCanvas* EffectManager::drawingCanvas = nullptr;
 std::vector<InfoPanel*> EffectManager::players;
+ActionPanel* EffectManager::actionPanel = nullptr;
 
 
 EffectManager::EffectManager() {
@@ -38,4 +42,10 @@ void EffectManager::Kill(const unsigned int _id) {
     auto player = GetPlayerById(_id);
     player->SetBackgroundColour(*wxRED);
     player->Refresh();
+}
+
+void EffectManager::SwapToSmallBlind() {
+    actionPanel->SetUpSmallBlind();
+    //Kill(0);
+
 }

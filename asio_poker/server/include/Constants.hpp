@@ -8,6 +8,8 @@ const unsigned int extra_cards_size = 2;
 const unsigned int start_cash = 500;
 const unsigned int quorum = 3;
 const unsigned int start_money = 500;
+const unsigned int big_blind = 20;
+const unsigned int small_blind = big_blind/2;
 const std::string resource_dir = "../resources/";
 const std::string otherside_card_file = "back.png";
 enum Color {
@@ -27,6 +29,8 @@ enum MessageType {
     TURN,
     MSG_EXIT,
     FORCED,
+    SMALL_BIND,
+    BIG_BIND,
     MSG_ERROR
 };
 
@@ -51,7 +55,9 @@ inline MessageType GetMessageType(const std::string& msg) {
         {"[PASS]",MessageType::PASS},
         {"[TURN]",MessageType::TURN},
         {"[EXIT]", MessageType::MSG_EXIT},
-        {"[FORCED]", MessageType::FORCED}
+        {"[FORCED]", MessageType::FORCED},
+        {"[SMALL_BIND", MessageType::SMALL_BIND},
+        {"[BIG_BIND]", MessageType::BIG_BIND}
     };
 
     for(const auto& [key,value]: tmpMap) {
