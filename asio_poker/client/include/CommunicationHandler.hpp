@@ -10,5 +10,7 @@ class CommunicationHandler {
         std::string GenerateRaiseMessage(const unsigned int, const unsigned int) const;
         std::string GenerateCallMessage(const unsigned int) const;
         std::string MessageTypeToString(MessageType type) const;
+        std::string GenerateBigBlindMessage(const unsigned int) const;
+        std::string GenerateSmallBlindMessage(const unsigned int) const;
         void SendAnyAction(wxCommandEvent& event);
 };

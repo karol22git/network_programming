@@ -17,6 +17,14 @@ std::string CommunicationHandler::MessageTypeToString(MessageType type) const {
             return "[PASS]";
         case 7:
             return "TURN";
+        case 8:
+            return "MSG_EXIT";
+        case 9:
+            return "[FORCED]";
+        case 10:
+            return "[SMALL_BLIND]";
+        case 11:
+            return "[BIG_BLIND]";
         default:
             return "ERROR";
     }
@@ -55,3 +63,20 @@ std::string CommunicationHandler::GenerateCallMessage(const unsigned int _id) co
     return msg;
 }
 
+
+
+
+std::string CommunicationHandler::GenerateSmallBlindMessage(const unsigned int _id) const {
+    MessageBuilder mb;
+    auto msg = mb.SetHeader(MessageTypeToString(MessageType::SMALL_BIND))
+    .SetId(_id)
+    .Build();
+    return msg;
+}
+std::string CommunicationHandler::GenerateBigBlindMessage(const unsigned int _id) const {
+ MessageBuilder mb;
+    auto msg = mb.SetHeader(MessageTypeToString(MessageType::BIG_BIND))
+    .SetId(_id)
+    .Build();
+    return msg;
+}

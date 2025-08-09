@@ -13,6 +13,8 @@ class Mediator{
         void Pass(wxCommandEvent& event);
         void Raise(wxCommandEvent& event);
         void Call(wxCommandEvent& event);
+        void SmallBlind(wxCommandEvent& event);
+        void BigBlind(wxCommandEvent& event);
     private:
         Mediator();
         void Bind();

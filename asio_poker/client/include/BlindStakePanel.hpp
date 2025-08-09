@@ -1,0 +1,26 @@
+#pragma once
+#include <wx/wx.h>
+#include "../../server/include/Constants.hpp"
+class BlindStakePanel: public wxPanel {
+    public:
+        BlindStakePanel(wxWindow* parent, bool type);
+        void GenerateSmallBlindPanel();
+        void GenerateBigBlindPanel();
+        void Arrange();
+        wxButton* GetBlindButton();
+    private:
+        wxPanel* placeholder;
+        wxBoxSizer* sizer;
+        const unsigned int labelWidth = 30;
+        const unsigned int labelHeight = 30;
+        const unsigned int stakeWidth = 50;
+        const unsigned int stakeheight = 20;
+        wxStaticText* label;
+        wxTextCtrl* stake;
+        const std::string labelString = "stake:";
+        const std::string smallBlind = "small blind";
+        const std::string bigBlind = "big blind";
+        wxButton* blindButton;
+        const std::string smallBlindString = std::to_string(small_blind);
+        const std::string bigBlindString = std::to_string(big_blind);
+};
