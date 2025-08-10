@@ -22,6 +22,7 @@ void ClientFrame::CreateItems() {
     helperSizer = new wxBoxSizer(wxHORIZONTAL);
     //bindPanel = new BindPanel(this,wxSize(actionPanelWidth,actionPanelHeight),"small bind","20");
     EffectManager::players.push_back(statusBar);
+    EffectManager::statusBar = statusBar;
     EffectManager::actionPanel = actionPanel;
 }
 

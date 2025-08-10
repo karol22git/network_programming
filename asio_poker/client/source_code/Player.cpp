@@ -1,7 +1,7 @@
 #include "../include/Player.hpp"
 
 Player* Player::instance = nullptr;
-Player::Player(unsigned int _id): id(_id), index(0){}
+Player::Player(unsigned int _id): id(_id), index(0), moneyLeft(0) {}
 
 void Player::SetPocketCards(const std::array<struct Card, pocket_cards> & _cards) {
     pocketCards = _cards;
@@ -39,4 +39,8 @@ void Player::Init(unsigned int id) {
 
 unsigned int Player::GetId() const {
     return id;
+}
+
+void Player::SetMoneyLeft(int _money) {
+    moneyLeft = _money;
 }

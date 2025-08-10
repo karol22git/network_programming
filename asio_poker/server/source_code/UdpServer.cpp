@@ -90,13 +90,14 @@ void UdpServer::StartGame() {
     std::this_thread::sleep_for(std::chrono::seconds(2));
     moderator->StartGame();
     SendPocketCards();
-   // std::this_thread::sleep_for(std::chrono::seconds(1));
+   //std::this_thread::sleep_for(std::chrono::seconds(1));
     //std::string msg = "hello";
     //auto msg_ptr = std::make_shared<std::string>(msg);
     //SendMessage("hello");
     SendFlop();
     BroadcastTurn();
     BroadcastBlinds();
+    BroadcastMessage(communicationHandler->GenerateStakeMessage());
 }
 
 void UdpServer::SendPocketCards() {

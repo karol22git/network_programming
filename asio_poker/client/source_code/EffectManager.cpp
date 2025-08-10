@@ -6,7 +6,7 @@
 DrawingCanvas* EffectManager::drawingCanvas = nullptr;
 std::vector<InfoPanel*> EffectManager::players;
 ActionPanel* EffectManager::actionPanel = nullptr;
-
+StatusBar* EffectManager::statusBar = nullptr;
 
 EffectManager::EffectManager() {
 }

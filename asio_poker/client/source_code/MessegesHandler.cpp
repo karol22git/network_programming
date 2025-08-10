@@ -34,6 +34,12 @@ void MessagesHandler::ResolveMessage(const std::string& msg) {
     else if(msg.find("BIG_BIND") != std::string::npos) {
         
     }
+    else if(msg.find("ACCEPT_CALL") != std::string::npos) {
+        ResolveAcceptCallMessage(msg);
+    }
+    else if(msg.find("STAKE") != std::string::npos) {
+        ResolveStakeMessage(msg);
+    }
 }
 
 std::array<struct Card, pocket_cards> MessagesHandler::ResolvePocketCardsMessage(const std::string& msg) const {
@@ -86,4 +92,12 @@ void MessagesHandler::SetDebugger(DebugConsole* db) {
 
 void MessagesHandler::ResolveKillMessage(const std::string& msg) {
     auto _id = ShellId(msg);
+}
+
+int MessageHandler::ResolveAcceptCallMessage(const std::string& msg) {
+    player->SetMoneyLeft(ShellId(msg));
+}
+
+void MessageHandler::ResolveStakeMessage(const std::string& msg) {
+    
 }

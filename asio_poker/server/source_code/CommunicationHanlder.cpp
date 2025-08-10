@@ -73,7 +73,15 @@ void CommunicationHandler::HandleNormalMessage(const std::string& msg)  {
 
             break;
         case MessageType::CALL:
-            Just();
+            if(CheckIfCallEvenPossible(ShellId(msg))) {
+                moderator->Call(ShellId(msg));
+                parent->BroadcastMessage(GenerateAcceptCallMessage(moderator->GetNew));
+                Just();
+            }
+            else {
+                moderator->Kill(ShellId(msg));
+                parent->BroadcastMessage(GenerateKillMessage(ShellId(msg)));
+            }
             break;  
         case MessageType::PASS:
             moderator->Kill(ShellId(msg));
@@ -92,6 +100,9 @@ void CommunicationHandler::HandleNormalMessage(const std::string& msg)  {
     }
 }
 
+void CommunicationHandler::CheckIfCallEvenPossible(const unsigned int _id) {
+    return moderator->CheckIfPlayerHaveEnoughtMoney(_id);
+}
 void CommunicationHandler::SetModerator(Moderator* _moderator) {
     moderator = _moderator;
 }
@@ -130,6 +141,22 @@ std::string CommunicationHandler::GenerateBigBindMessage() {
     MessageBuilder mb;
     auto msg = mb.SetHeader(MessageTypeToString(MessageType::BIG_BIND))
     .SetParams(std::to_string(quorum -1))
+    .Build();
+    return msg;
+}
+
+std::string CommunicationHandler::GenerateAcceptCallMessage(int money) const {
+    MessageBuilder mb;
+    auto msg = mb.SetHeader(MessageTypeToString(MessageType::ACCEPT_CALL))
+    .SetParams(std::to_string(money))
+    .Build();
+    return msg;
+}
+
+std::string CommunicationHandler::GenerateStakeMessage() const {
+    MessageBuilder mb;
+    auto msg = mb.SetHeader(MessageTypeToString(MessageType::STAKE))
+    .SetParams(std::to_string(moderator->GetStake()))
     .Build();
     return msg;
 }

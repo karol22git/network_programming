@@ -13,8 +13,12 @@ class Player {
         unsigned int GetId() const;
         bool isAlive() const;
         void Kill();
+        int GetMoneyLeft() const;
+        void Call(int);
     private:
         std::array<struct Card, pocket_cards> cards;
         unsigned int id;
         bool alive;
+        int moneyLeft;
+        int currentStake;
 };

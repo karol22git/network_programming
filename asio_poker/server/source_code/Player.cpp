@@ -1,7 +1,7 @@
 #include "../include/Player.hpp"
 
 
-Player::Player(unsigned int _id): id(_id), alive(true) {
+Player::Player(unsigned int _id): id(_id), alive(true), moneyLeft(start_cash), currentStake(0) {
 
 }
 
@@ -23,4 +23,12 @@ bool Player::isAlive() const {
 
 void Player::Kill() {
     alive = false;
+}
+
+int Player::GetMoneyLeft() const {
+    return moneyLeft;
+}
+
+void Player::Call(int _stake) {
+    moneyLeft -= _stake;
 }

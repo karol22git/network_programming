@@ -15,6 +15,8 @@ class CommunicationHandler {
         std::string GenerateAnotherCardMessage(const struct Card& c) const;
         std::string GenerateTurnMessage(unsigned int _id) const;
         std::string GenerateKillMessage(unsigned int _id) const;
+        std::string GenerateAcceptCallMessage(int money) const;
+        std::string GenerateStakeMessage() const;
         static std::string GenerateSmallBindMessage() ;
         static std::string GenerateBigBindMessage() ;
         void HandleNormalMessage(const std::string&);

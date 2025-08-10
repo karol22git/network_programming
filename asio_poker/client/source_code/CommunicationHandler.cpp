@@ -25,6 +25,8 @@ std::string CommunicationHandler::MessageTypeToString(MessageType type) const {
             return "[SMALL_BLIND]";
         case 11:
             return "[BIG_BLIND]";
+        case 12:
+            return "[ACCEPT_CALL]";
         default:
             return "ERROR";
     }

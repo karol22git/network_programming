@@ -16,6 +16,8 @@ class MessagesHandler {
         void ResolveKillMessage(const std::string&);
         int ShellId(const std::string&) const;
         void SetDebugger(DebugConsole* db);
+        void ResolveAcceptCallMessage(const std::string&);
+        void ResolveStakeMessage(const std::string&);
     private:
         std::vector<std::string> LiftCardsOutOfString(const std::string&) const;
         Player *player;

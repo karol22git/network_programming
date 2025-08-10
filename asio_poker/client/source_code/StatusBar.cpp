@@ -29,3 +29,7 @@ void StatusBar::Arrange() {
     grid->Add(stake, 0, wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxALL, 2);
     grid->Add(20, 23, wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxALL, 2);
 }
+
+void StatusBar::SetWallet(int _amount) {
+    wallet->SetLabel(std::to_string(_amount));
+}

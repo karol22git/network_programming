@@ -1,6 +1,6 @@
 #include "../include/Moderator.hpp"
 
-Moderator::Moderator(): croupier(std::make_unique<Croupier>()) {
+Moderator::Moderator(): croupier(std::make_unique<Croupier>()), currentStage(Stage::PRE_FLOP) {
 }
 
 void Moderator::StartGame() {
@@ -51,4 +51,63 @@ int Moderator::GetLastAlivePlayerId() const {
 
 void Moderator::Kill(unsigned int _id) {
     players[_id]->Kill();
+}
+
+int Moderator::WhoCalledRaise() const {
+    return gm.whoCalledRaise;
+}
+
+void Moderator::CallRaise(int _id) {
+    gm.whoCalledRaise = _id;
+}
+
+int Moderator::GetFirstAliveIndex() const {
+    int returnIndex = 0;
+    while(!players[returnIndex]->isAlive()) ++returnIndex;
+    return returnIndex;
+}
+
+bool Moderator::TurnEndCondition() const {
+    if(gm.didRaiseOccured) {
+        return CurrentTurn() == gm.whoCalledRaise;
+    }
+    else {
+        return CurrentTurn() == gm.startIndex;
+    }
+}
+
+void Moderator::SetUpNextStage() {
+    if(currentStage == Stage::RIVER) {
+        EndGame();
+    }
+    else {
+        gm.didRaiseOccured = false;
+        gm.whoCalledRaise = 0;
+        gm.startIndex = GetFirstAliveIndex();
+        //currentStage = currentStage +1;
+        currentStage = static_cast<Stage>(static_cast<int>(currentStage) + 1);
+
+    }
+}
+
+void Moderator::EndGame() {
+
+}
+
+
+Stage Moderator::FetchStage() const {
+    return currentStage;
+}
+
+bool Moderator::CheckIfPlayerHaveEnouhgtMoney(const unsigned int _id) const {
+    return players[_id]->GetMoneyLeft() > gm.stake;
+}
+
+
+void Moderator::Call(const unsigned int _id) {
+    players[_id]->Call(gm.stake);
+}
+
+int Moderator::GetStake() const {
+    return gm.stake;
 }

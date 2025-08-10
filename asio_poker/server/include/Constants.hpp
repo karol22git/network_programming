@@ -19,6 +19,13 @@ enum Color {
     karo
 };
 
+enum Stage {
+    PRE_FLOP = 1,
+    FLOP,
+    TURN,
+    RIVER = 4
+};
+
 enum MessageType {
     POCKET_CARDS = 1,
     FLOP,
@@ -31,6 +38,8 @@ enum MessageType {
     FORCED,
     SMALL_BIND,
     BIG_BIND,
+    ACCEPT_CALL,
+    STAKE,
     MSG_ERROR
 };
 
@@ -57,7 +66,9 @@ inline MessageType GetMessageType(const std::string& msg) {
         {"[EXIT]", MessageType::MSG_EXIT},
         {"[FORCED]", MessageType::FORCED},
         {"[SMALL_BIND", MessageType::SMALL_BIND},
-        {"[BIG_BIND]", MessageType::BIG_BIND}
+        {"[BIG_BIND]", MessageType::BIG_BIND},
+        {"[ACCEPT_CALL]",MessageType::ACCEPT_CALL},
+        {"[STAKE]",MessageType::STAKE}
     };
 
     for(const auto& [key,value]: tmpMap) {

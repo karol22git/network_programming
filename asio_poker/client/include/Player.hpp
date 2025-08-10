@@ -15,6 +15,7 @@ class Player {
         void SetFlopCards(const std::array<struct Card, flop_size>&);
         void AddExtraCard(const struct Card&);
         unsigned int GetId() const;
+        void SetMoneyLeft(int);
     private:
         Player(unsigned int);
         int id;
@@ -24,5 +25,6 @@ class Player {
         std::array<struct Card, extra_cards_size> extraCards;
         DrawingCanvas* drawingCanvas;
         static Player* instance;
+        int moneyLeft;
 
 };
