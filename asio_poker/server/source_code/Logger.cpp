@@ -15,3 +15,7 @@ void Logger::MessageReceived(std::string ip, unsigned short port, std::string& m
 void Logger::MessageSend(std::string ip, unsigned short port, const std::string &msg) const {
     std::cout<<"[LOG] i send message to ip: "<<ip<<" and port: "<<port<<" message: "<<msg<<std::endl;
 }
+
+void Logger::SimpleLog(const std::string& msg) const {
+    std::cout<<msg<<std::endl;
+}

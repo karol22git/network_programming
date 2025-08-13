@@ -6,7 +6,7 @@ const unsigned int pocket_cards = 2;
 const unsigned int flop_size = 3;
 const unsigned int extra_cards_size = 2;
 const unsigned int start_cash = 500;
-const unsigned int quorum = 3;
+const unsigned int quorum = 2;
 const unsigned int start_money = 500;
 const unsigned int big_blind = 20;
 const unsigned int small_blind = big_blind/2;
@@ -20,13 +20,14 @@ enum Color {
 };
 
 enum Stage {
-    PRE_FLOP = 1,
-    FLOP,
-    TURN,
-    RIVER = 4
+    PRE_FLOP_STAGE = 1,
+    FLOP_STAGE,
+    TURN_STAGE,
+    RIVER_STAGE,
+    END_GAME = 5
 };
 
-enum MessageType {
+enum MessageType :int {
     POCKET_CARDS = 1,
     FLOP,
     ANOTHER_CARD,
@@ -36,10 +37,11 @@ enum MessageType {
     TURN,
     MSG_EXIT,
     FORCED,
-    SMALL_BIND,
+    SMALL_BLIND,
     BIG_BIND,
     ACCEPT_CALL,
     STAKE,
+    POT,
     MSG_ERROR
 };
 
@@ -65,10 +67,11 @@ inline MessageType GetMessageType(const std::string& msg) {
         {"[TURN]",MessageType::TURN},
         {"[EXIT]", MessageType::MSG_EXIT},
         {"[FORCED]", MessageType::FORCED},
-        {"[SMALL_BIND", MessageType::SMALL_BIND},
+        {"[SMALL_BLIND", MessageType::SMALL_BLIND},
         {"[BIG_BIND]", MessageType::BIG_BIND},
         {"[ACCEPT_CALL]",MessageType::ACCEPT_CALL},
-        {"[STAKE]",MessageType::STAKE}
+        {"[STAKE]",MessageType::STAKE},
+        {"[POT]",MessageType::POT}
     };
 
     for(const auto& [key,value]: tmpMap) {
@@ -108,6 +111,9 @@ struct Card {
                 break;
         }
         return col + std::to_string(val);
+    }
+    int toInt() const {
+        
     }
 };
 

@@ -39,9 +39,15 @@ class UdpServer {
         void BroadcastTurn();
         void BroadcastMessage(const std::string& msg);
         void BroadcastBlinds();
-    private:
+        Logger* logger = nullptr;
         void SendMessage(const std::string&);
         void SendMessage(const std::string&, udp::endpoint);
+        void SendFlop();
+        void SendTurnCard();
+        void SendRiverCard();
+    private:
+        //void SendMessage(const std::string&);
+        //void SendMessage(const std::string&, udp::endpoint);
         void HandleNewConnection();
         void RefuseConnection();
         void start_receive();
@@ -51,13 +57,13 @@ class UdpServer {
         bool CheckForQuorum() const;
         void StartGame();
         void SendPocketCards();
-        void SendFlop();
+        //void SendFlop();
         void AcceptConnection();
         //void BroadcastTurn();
         udp::socket socket_;
         udp::endpoint remote_endpoint_;
         std::array<char, 128> recv_buffer_;
-        Logger* logger = nullptr;
+        //Logger* logger = nullptr;
         //std::string im = "gwn";
         unsigned int nextID = 0;
         struct Messages infoMessages;

@@ -11,10 +11,11 @@ void StatusBar::CreateItems(const std::string& _username) {
     nicknameLabel =  new wxStaticText(this, wxID_ANY, "Username:");
     walletLabel = new wxStaticText(this, wxID_ANY, "Youre wallet:");
     stakeLabel = new wxStaticText(this, wxID_ANY, "Current stake: ");
-
+    potLabel =  new wxStaticText(this, wxID_ANY, "Total pot:");
     wallet = new wxStaticText(this, wxID_ANY, std::to_string(start_money));
     nickname = new wxStaticText(this, wxID_ANY,_username);
     stake =  new wxStaticText(this, wxID_ANY, std::to_string(0));
+    pot = new wxStaticText(this, wxID_ANY, std::to_string(0));
 }
 
 void StatusBar::Arrange() {
@@ -27,9 +28,15 @@ void StatusBar::Arrange() {
 
     grid->Add(stakeLabel, 0, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL | wxALL, 2);
     grid->Add(stake, 0, wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxALL, 2);
-    grid->Add(20, 23, wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxALL, 2);
+    grid->Add(potLabel, 0, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL | wxALL, 2);
+    grid->Add(pot, 0, wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxALL, 2);
+    //grid->Add(20, 23, wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxALL, 2);
 }
 
 void StatusBar::SetWallet(int _amount) {
     wallet->SetLabel(std::to_string(_amount));
+}
+
+void StatusBar::SetPot(const std::string& _pot) {
+    pot->SetLabel(_pot);
 }

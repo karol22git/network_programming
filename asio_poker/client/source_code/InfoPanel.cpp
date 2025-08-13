@@ -9,6 +9,10 @@ void InfoPanel::SetStake(const std::string& newStake) {
     stake->SetLabel(newStake);
 }
 
+void InfoPanel::SetStake(int newStake) {
+    stake->SetLabel(std::to_string(newStake));
+}
+
 void InfoPanel::SetId(unsigned int _id) {
     id = _id;
 }

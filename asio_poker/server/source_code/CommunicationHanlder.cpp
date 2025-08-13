@@ -24,9 +24,15 @@ std::string CommunicationHandler::MessageTypeToString(MessageType type)  {
         case 9:
             return "FORCED";
         case 10:
-            return "SMALL_BIND";
+            return "SMALL_BLIND";
         case 11:
             return "BIG_BIND";
+        case 12:
+            return "ACCEPT_CALL";
+        case 13:
+            return "STAKE";
+        case 14:
+            return "POT";
         default:
             return "ERROR";
     }
@@ -67,6 +73,7 @@ std::string CommunicationHandler::GenerateTurnMessage(unsigned int _id) const {
 void CommunicationHandler::HandleNormalMessage(const std::string& msg)  {
     MessageType msgType = GetMessageType(msg);
     int messageAutorId = ShellId(msg);
+    bool myCondition;
     if(msgType != MessageType::FORCED && messageAutorId != moderator->CurrentTurn()) return;
     switch(msgType) {
         case MessageType::RAISE:
@@ -75,13 +82,19 @@ void CommunicationHandler::HandleNormalMessage(const std::string& msg)  {
         case MessageType::CALL:
             if(CheckIfCallEvenPossible(ShellId(msg))) {
                 moderator->Call(ShellId(msg));
-                parent->BroadcastMessage(GenerateAcceptCallMessage(moderator->GetNew));
+                moderator->UpdatePot(moderator->GetStake());
+                //parent->logger->SimpleLog("Moge zrobic call");
+                parent->SendMessage(GenerateAcceptCallMessage(moderator->GetNewWalletForPlayer(ShellId(msg))));
+                parent->BroadcastMessage(GenerateStakeMessage(ShellId(msg),moderator->GetStake()));
+                parent->BroadcastMessage(GeneratePotMessage(moderator->GetPot()));
                 Just();
             }
             else {
                 moderator->Kill(ShellId(msg));
                 parent->BroadcastMessage(GenerateKillMessage(ShellId(msg)));
             }
+            myCondition = moderator->TurnEndCondition();
+            if(myCondition) moderator->SetUpNextStage();
             break;  
         case MessageType::PASS:
             moderator->Kill(ShellId(msg));
@@ -95,13 +108,15 @@ void CommunicationHandler::HandleNormalMessage(const std::string& msg)  {
             moderator->Kill(ShellId(msg));
             parent->BroadcastMessage(GenerateKillMessage(ShellId(msg)));
             break;
+        case MessageType::SMALL_BLIND:
+            parent->BroadcastMessage(GenerateStakeMessage(ShellId(msg),small_blind));
         default:
             break;
     }
 }
 
-void CommunicationHandler::CheckIfCallEvenPossible(const unsigned int _id) {
-    return moderator->CheckIfPlayerHaveEnoughtMoney(_id);
+bool CommunicationHandler::CheckIfCallEvenPossible(const unsigned int _id) const {
+    return moderator->CheckIfPlayerHaveEnouhgtMoney(_id);
 }
 void CommunicationHandler::SetModerator(Moderator* _moderator) {
     moderator = _moderator;
@@ -131,7 +146,7 @@ std::string CommunicationHandler::GenerateKillMessage(unsigned int _id) const {
 
 std::string CommunicationHandler::GenerateSmallBindMessage() {
     MessageBuilder mb;
-    auto msg = mb.SetHeader(MessageTypeToString(MessageType::SMALL_BIND))
+    auto msg = mb.SetHeader(MessageTypeToString(MessageType::SMALL_BLIND))
     .SetParams(std::to_string(0))
     .Build();
     return msg;
@@ -153,10 +168,20 @@ std::string CommunicationHandler::GenerateAcceptCallMessage(int money) const {
     return msg;
 }
 
-std::string CommunicationHandler::GenerateStakeMessage() const {
+std::string CommunicationHandler::GenerateStakeMessage(int id, int stake) const {
     MessageBuilder mb;
     auto msg = mb.SetHeader(MessageTypeToString(MessageType::STAKE))
-    .SetParams(std::to_string(moderator->GetStake()))
+    .SetParams(std::to_string(id))
+    .SetParams(std::to_string(stake))
+    .Build();
+    return msg;
+}
+
+
+std::string CommunicationHandler::GeneratePotMessage(int pot) const {
+    MessageBuilder mb;
+    auto msg = mb.SetHeader(MessageTypeToString(MessageType::POT))
+    .SetParams(std::to_string(pot))
     .Build();
     return msg;
 }

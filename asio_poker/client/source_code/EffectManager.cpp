@@ -1,6 +1,7 @@
 #include "../include/EffectManager.hpp"
 #include "../include/InfoPanel.hpp"
 #include "../include/ActionPanel.hpp"
+#include "../include/StatusBar.hpp"
 #include <wx/utils.h>
 #include <wx/thread.h>
 DrawingCanvas* EffectManager::drawingCanvas = nullptr;
@@ -48,4 +49,15 @@ void EffectManager::SwapToSmallBlind() {
     actionPanel->SetUpSmallBlind();
     //Kill(0);
 
+}
+
+void EffectManager::SetStake(int id, int stake) {
+    auto player = GetPlayerById(id);
+    player->SetStake(stake);
+    player->Refresh();
+}
+
+void EffectManager::SetPot(const std::string& newPot) {
+    statusBar->SetPot(newPot);
+    statusBar->Refresh();
 }

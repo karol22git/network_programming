@@ -28,7 +28,7 @@ void MessagesHandler::ResolveMessage(const std::string& msg) {
     else if(msg.find("EXIT") != std::string::npos) {
         effectManager->Kill(ShellId(msg));
     }
-    else if(msg.find("SMALL_BIND") != std::string::npos) {
+    else if(msg.find("SMALL_BLIND") != std::string::npos) {
         effectManager->SwapToSmallBlind();
     }
     else if(msg.find("BIG_BIND") != std::string::npos) {
@@ -39,6 +39,9 @@ void MessagesHandler::ResolveMessage(const std::string& msg) {
     }
     else if(msg.find("STAKE") != std::string::npos) {
         ResolveStakeMessage(msg);
+    }
+    else if(msg.find("POT") != std::string::npos) {
+        ResolvePotMessage(msg);
     }
 }
 
@@ -94,10 +97,25 @@ void MessagesHandler::ResolveKillMessage(const std::string& msg) {
     auto _id = ShellId(msg);
 }
 
-int MessageHandler::ResolveAcceptCallMessage(const std::string& msg) {
+void MessagesHandler::ResolveAcceptCallMessage(const std::string& msg) {
     player->SetMoneyLeft(ShellId(msg));
 }
 
-void MessageHandler::ResolveStakeMessage(const std::string& msg) {
-    
+void MessagesHandler::ResolveStakeMessage(const std::string& msg) {
+    auto args = GetAllParameters(msg);
+    auto id = std::stoi(args[0]);
+    auto stake = std::stoi(args[1]);
+    effectManager->SetStake(id,stake);
 }
+
+std::vector<std::string> MessagesHandler::GetAllParameters(const std::string& msg) const {
+    return LiftCardsOutOfString(msg);
+}
+
+std::string MessagesHandler::ShellFirstParameter(const std::string& msg) const {
+    return LiftCardsOutOfString(msg)[0];
+}
+void MessagesHandler::ResolvePotMessage(const std::string& msg) {
+    auto newPot = ShellFirstParameter(msg);
+    effectManager->SetPot(newPot);
+}   

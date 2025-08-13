@@ -32,3 +32,7 @@ int Player::GetMoneyLeft() const {
 void Player::Call(int _stake) {
     moneyLeft -= _stake;
 }
+
+void Player::SetMoneyLeft(int newMoney) {
+    moneyLeft = newMoney;
+}

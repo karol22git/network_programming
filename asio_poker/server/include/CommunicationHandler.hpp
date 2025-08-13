@@ -16,13 +16,15 @@ class CommunicationHandler {
         std::string GenerateTurnMessage(unsigned int _id) const;
         std::string GenerateKillMessage(unsigned int _id) const;
         std::string GenerateAcceptCallMessage(int money) const;
-        std::string GenerateStakeMessage() const;
+        std::string GenerateStakeMessage(int, int) const;
+        std::string GeneratePotMessage(int) const;
         static std::string GenerateSmallBindMessage() ;
         static std::string GenerateBigBindMessage() ;
         void HandleNormalMessage(const std::string&);
         void SetModerator(Moderator*);
         void Just();
         int ShellId(const std::string&) const;
+        bool CheckIfCallEvenPossible(const unsigned int) const;
         private:
             Moderator* moderator;
             UdpServer* parent;

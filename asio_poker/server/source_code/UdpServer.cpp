@@ -3,7 +3,7 @@
 #include <thread>
 #include <chrono>
 
-UdpServer::UdpServer(boost::asio::io_context &io_context) :socket_(io_context,udp::endpoint(udp::v4(),8080)), moderator(new Moderator()), logger(new Logger()),
+UdpServer::UdpServer(boost::asio::io_context &io_context) :socket_(io_context,udp::endpoint(udp::v4(),8080)), moderator(new Moderator(this)), logger(new Logger()),
     communicationHandler(new CommunicationHandler(this)) {
     start_receive();
     communicationHandler->SetModerator(moderator);
@@ -55,17 +55,9 @@ void UdpServer::AcceptConnection() {
     players[new_player.id] = new_player;
     ++nextID;
     SendMessage(infoMessages.ACCEPTED + "{" + std::to_string(new_player.id) +"}");
-    //if(new_player.id == 0) SendMessage(CommunicationHandler::GenerateSmallBindMessage());
-    //else if(new_player.id == quorum - 1) SendMessage(CommunicationHandler::GenerateBigBindMessage());
     moderator->CreateNewPlayer(new_player.id);
     auto condition = CheckForQuorum();
     if(condition) StartGame();
-    //moderator->StartGame();
-    //auto players = moderator->GetPlayers();
-    //auto p = players[0];
-    //auto cards = p->GetPocketCards();
-    //std::string  s = communicationHandler->GeneratePocketCardsMessage(cards[0],cards[1]);
-    //SendMessage(s);
 }
 
 void UdpServer::HandleNewConnection() {
@@ -94,10 +86,10 @@ void UdpServer::StartGame() {
     //std::string msg = "hello";
     //auto msg_ptr = std::make_shared<std::string>(msg);
     //SendMessage("hello");
-    SendFlop();
+    //SendFlop();
     BroadcastTurn();
     BroadcastBlinds();
-    BroadcastMessage(communicationHandler->GenerateStakeMessage());
+    //BroadcastMessage(communicationHandler->GenerateStakeMessage());
 }
 
 void UdpServer::SendPocketCards() {
@@ -145,4 +137,20 @@ void UdpServer::BroadcastBlinds() {
     auto msg = communicationHandler->GenerateSmallBindMessage();
     SendMessage(msg,players[0].remote_endpoint);
 
+}
+
+void UdpServer::SendTurnCard() {
+    auto turnCard = moderator->GetTurnCard();
+    auto msg = communicationHandler->GenerateAnotherCardMessage(turnCard);
+    for(const auto& [key, value] : players) {
+        SendMessage(msg, value.remote_endpoint);
+    }
+}
+
+void UdpServer::SendRiverCard() {
+    auto riverCard = moderator->GetRiverCard();
+    auto msg = communicationHandler->GenerateAnotherCardMessage(riverCard);
+    for(const auto& [key, value] : players) {
+        SendMessage(msg, value.remote_endpoint);
+    }
 }

@@ -1,7 +1,7 @@
 #include "../include/DrawingCanvas.hpp"
 #include <wx/graphics.h>
 #include <wx/dcbuffer.h>
-DrawingCanvas::DrawingCanvas(wxWindow* parent, wxWindowID id, const wxPoint &pos, const wxSize &size): wxPanel(parent,id,pos,size) {
+DrawingCanvas::DrawingCanvas(wxWindow* parent, wxWindowID id, const wxPoint &pos, const wxSize &size): wxPanel(parent,id,pos,size), pot(0) {
     this->SetBackgroundStyle(wxBG_STYLE_PAINT);
     this->Bind(wxEVT_PAINT, &DrawingCanvas::OnPaint, this);
     LoadBasicTemplate();
@@ -17,6 +17,7 @@ void DrawingCanvas::OnPaint(wxPaintEvent &evt) {
     if(gc) {
         DrawPocketCards(gc);
         DrawSharedCards(gc);
+        //DrawThePot(gc);
     }
     delete gc;
 }
@@ -28,7 +29,11 @@ void DrawingCanvas::DrawPocketCards(wxGraphicsContext *gc) {
 void DrawingCanvas::DrawSharedCards(wxGraphicsContext *gc) {
     for(unsigned int i = 0 ; i< flop_size +extra_cards_size ; ++i) gc->DrawBitmap(sharedCards[i],i*cardWidth,0,cardWidth,cardHeight);
 }
-
+//void DrawingCanvas::DrawThePot(wxGraphicsContext *gc) {
+//    //gc->SetTextForeground(*wxBLACK); // Kolor tekstu
+//    gc->SetFont(wxFontInfo(14).Bold(), *wxBLACK);
+//    gc->DrawText("Witaj w wxWidgets!", wxPoint(50, 50)); // Pozycja tekstu
+//}
 void DrawingCanvas::FillStructures() {
     for(unsigned int i = 0 ; i < flop_size +extra_cards_size ; ++i) sharedCards[i] = cardOtherside;
     for(unsigned int i  = 0 ; i< pocket_cards ; ++i) pocketCards[i] = cardOtherside;
@@ -66,4 +71,8 @@ void DrawingCanvas::AddAnotherCard(const struct Card c) {
     sharedCards[index] = FetchCardBitmap(c.toString());
     ++index;
     Refresh();
+}
+
+void DrawingCanvas::UpdatePot(int _newPot) {
+    pot = _newPot;
 }

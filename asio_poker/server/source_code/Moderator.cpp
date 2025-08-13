@@ -1,11 +1,12 @@
 #include "../include/Moderator.hpp"
-
-Moderator::Moderator(): croupier(std::make_unique<Croupier>()), currentStage(Stage::PRE_FLOP) {
+#include "../include/UdpServer.hpp"
+Moderator::Moderator(UdpServer* _parent): croupier(std::make_unique<Croupier>()), currentStage(Stage::PRE_FLOP_STAGE), parent(_parent) {
 }
 
 void Moderator::StartGame() {
     for(const auto player: players) player->AcceptCards(croupier->GetPocketCards());
     FetchFlop();
+    FetchExtraCards();
     turnManager = new TurnManager(players);
 }
 
@@ -77,7 +78,7 @@ bool Moderator::TurnEndCondition() const {
 }
 
 void Moderator::SetUpNextStage() {
-    if(currentStage == Stage::RIVER) {
+    if(currentStage == Stage::RIVER_STAGE) {
         EndGame();
     }
     else {
@@ -86,7 +87,21 @@ void Moderator::SetUpNextStage() {
         gm.startIndex = GetFirstAliveIndex();
         //currentStage = currentStage +1;
         currentStage = static_cast<Stage>(static_cast<int>(currentStage) + 1);
-
+        switch(currentStage) {
+            case FLOP_STAGE:
+                parent->SendFlop();
+                break;
+            case TURN_STAGE:
+                parent->SendTurnCard();
+                break;
+            case RIVER_STAGE:
+                parent->SendRiverCard();
+                break;
+            case END_GAME:
+                break;
+            default:
+                break;
+        }
     }
 }
 
@@ -94,6 +109,13 @@ void Moderator::EndGame() {
 
 }
 
+std::vector<Player*> Moderator::FetchAllAlivePlayers() const  {
+    std::vector<Player*> result;
+    for(auto p: players) {
+        if(p->isAlive()) result.push_back(p);
+    }
+    return result;
+}
 
 Stage Moderator::FetchStage() const {
     return currentStage;
@@ -110,4 +132,34 @@ void Moderator::Call(const unsigned int _id) {
 
 int Moderator::GetStake() const {
     return gm.stake;
+}
+
+int Moderator::GetNewWalletForPlayer(int id) {
+    return players[id]->GetMoneyLeft();
+}
+
+
+void Moderator::FetchExtraCards() {
+    turnCard = croupier->GetTurnCard();
+    riverCard = croupier->GetRiverCard();
+}
+
+struct Card Moderator::GetTurnCard() const {
+    return turnCard;
+}
+
+struct Card Moderator::GetRiverCard() const {
+    return riverCard;
+}
+
+void Moderator::UpdatePot(int _dp) {
+    gm.totalPot += _dp;
+}
+
+int Moderator::GetPot() const {
+    return gm.totalPot;
+}
+
+int Moderator::EncodeCard(struct Card &c) const {
+    
 }

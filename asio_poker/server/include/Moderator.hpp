@@ -10,11 +10,12 @@ struct GameMetadata {
     int startIndex = 0;
     bool didRaiseOccured = false;
     int stake = 50;
+    int totalPot = 0;
 };
-
+class UdpServer;
 class Moderator {
     public:
-        Moderator();
+        Moderator(UdpServer*);
         void StartGame();
         void CreateNewPlayer(unsigned int id);
         std::vector<Player*> GetPlayers() const;
@@ -35,12 +36,23 @@ class Moderator {
         bool CheckIfPlayerHaveEnouhgtMoney(const unsigned int _id) const;
         void Call(const unsigned int);
         int GetStake() const;
+        int GetNewWalletForPlayer(int);
+        struct Card GetTurnCard() const;
+        struct Card GetRiverCard() const;
+        void FetchExtraCards();
+        void UpdatePot(int);
+        int GetPot() const;
+        std::vector<Player*> FetchAllAlivePlayers() const;
+        int EncodeCard(struct Card&) const;
     private:
         std::unique_ptr<Croupier> croupier = nullptr;
         std::vector<Player*> players;
         std::array<struct Card, flop_size> flopCards;
+        struct Card turnCard;
+        struct Card riverCard;
         int currentTurn = 0;
         TurnManager* turnManager;
         Stage currentStage;
         struct GameMetadata gm;
+        UdpServer* parent;
 };

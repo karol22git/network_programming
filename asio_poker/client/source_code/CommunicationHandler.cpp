@@ -27,6 +27,8 @@ std::string CommunicationHandler::MessageTypeToString(MessageType type) const {
             return "[BIG_BLIND]";
         case 12:
             return "[ACCEPT_CALL]";
+        case 13:
+            return "[POT]";
         default:
             return "ERROR";
     }
@@ -70,7 +72,7 @@ std::string CommunicationHandler::GenerateCallMessage(const unsigned int _id) co
 
 std::string CommunicationHandler::GenerateSmallBlindMessage(const unsigned int _id) const {
     MessageBuilder mb;
-    auto msg = mb.SetHeader(MessageTypeToString(MessageType::SMALL_BIND))
+    auto msg = mb.SetHeader(MessageTypeToString(MessageType::SMALL_BLIND))
     .SetId(_id)
     .Build();
     return msg;
