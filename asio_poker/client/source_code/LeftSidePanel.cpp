@@ -14,7 +14,9 @@ void LeftSidePanel::ArrangePanel() {
     int resultRight = SafeModulo(id - 1, 5);
     playerStatusPanelA = new StatusPanel(handlerPanel,wxPoint(0,0),wxSize(200,100),std::to_string(resultLeft));
     playerStatusPanelA->SetId(resultLeft);
+    playerACards = new PlayerCardsPanel(handlerPanel,wxPoint(0,60),wxSize(200,126));
     playerStatusPanelB = new StatusPanel(handlerPanel,wxPoint(125,340),wxSize(200,100),std::to_string(resultRight));
+    playerBCards = new PlayerCardsPanel(handlerPanel,wxPoint(123,248),wxSize(200,126));
     playerStatusPanelB->SetId(resultRight);
     AddStatusPanelToEffectManager(playerStatusPanelA);
     AddStatusPanelToEffectManager(playerStatusPanelB);

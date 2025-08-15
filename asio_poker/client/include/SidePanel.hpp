@@ -2,6 +2,7 @@
 #include <wx/wx.h>
 #include "StatusPanel.hpp"
 #include "InfoPanel.hpp"
+#include "PlayerCardsPanel.hpp"
 class SidePanel: public wxPanel {
     public:
         SidePanel(wxWindow*, wxSize);
@@ -12,5 +13,7 @@ class SidePanel: public wxPanel {
         wxSize size;
         InfoPanel* playerStatusPanelA;
         InfoPanel* playerStatusPanelB;
+        PlayerCardsPanel* playerACards;
+        PlayerCardsPanel* playerBCards;
         wxPanel *handlerPanel;
 };

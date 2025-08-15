@@ -18,6 +18,9 @@ class MessagesHandler {
         void SetDebugger(DebugConsole* db);
         void ResolveAcceptCallMessage(const std::string&);
         void ResolveStakeMessage(const std::string&);
+        void ResolvePotMessage(const std::string&);
+        std::vector<std::string> GetAllParameters(const std::string& msg) const;
+        std::string ShellFirstParameter(const std::string& msg) const;
     private:
         std::vector<std::string> LiftCardsOutOfString(const std::string&) const;
         Player *player;

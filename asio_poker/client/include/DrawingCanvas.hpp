@@ -10,6 +10,7 @@ class DrawingCanvas: public wxPanel {
         void FillPocketCards(const std::array<struct Card, pocket_cards>&);
         void FillFlopCards(const std::array<struct Card, flop_size>&);
         void AddAnotherCard(const struct Card);
+        void UpdatePot(int);
     private:
         const std::string extension = ".svg.png";
         std::string s;
@@ -19,9 +20,11 @@ class DrawingCanvas: public wxPanel {
         const int cardHeight = 3*unit;
         const int firstCardPosX = 105;
         const int firstCardPosY = 280;
+        int pot;
         void OnPaint(wxPaintEvent &evt);
         void DrawPocketCards(wxGraphicsContext *gc);
         void DrawSharedCards(wxGraphicsContext *gc);
+        //void DrawThePot(wxGraphicsContext *gc);
         void FillStructures();
         void LoadBasicTemplate();
         //void FillPocketCards(const std::array<struct Card, pocket_cards>&);

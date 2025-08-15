@@ -2,13 +2,14 @@
 #include "../include/InfoPanel.hpp"
 #include "../include/ActionPanel.hpp"
 #include "../include/StatusBar.hpp"
+#include "../include/GameStage.hpp"
 #include <wx/utils.h>
 #include <wx/thread.h>
 DrawingCanvas* EffectManager::drawingCanvas = nullptr;
 std::vector<InfoPanel*> EffectManager::players;
 ActionPanel* EffectManager::actionPanel = nullptr;
 StatusBar* EffectManager::statusBar = nullptr;
-
+GameStage* EffectManager::gameStage = nullptr;
 EffectManager::EffectManager() {
 }
 

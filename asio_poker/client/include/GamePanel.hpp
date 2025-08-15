@@ -4,6 +4,7 @@
 #include "LeftSidePanel.hpp"
 #include "RightSidePanel.hpp"
 #include "DrawingCanvas.hpp"
+#include "GameStage.hpp"
 class GamePanel: public wxPanel {
     public:
         GamePanel(wxWindow* parent);
@@ -11,6 +12,7 @@ class GamePanel: public wxPanel {
         void ArrangeItems();
     private:
         DrawingCanvas* gameWindow;
+        GameStage* mainGameStage;
         wxBoxSizer* mainSizer;
         wxBoxSizer* middleSizer;
         const wxSize sidePanelSize;

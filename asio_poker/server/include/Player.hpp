@@ -15,6 +15,7 @@ class Player {
         int GetMoneyLeft() const;
         void Call(int);
         void SetMoneyLeft(int);
+        
     private:
         std::array<struct Card, pocket_cards> cards;
         unsigned int id;

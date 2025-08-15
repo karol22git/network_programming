@@ -7,7 +7,10 @@ class StatusBar: public InfoPanel{//public wxPanel {
         void Arrange() override;
         void CreateItems(const std::string&) override;
         void SetWallet(int);
+        void SetPot(const std::string&);
     private:
         wxStaticText* walletLabel;
         wxStaticText* wallet;
+        wxStaticText* potLabel;
+        wxStaticText* pot;
 };

@@ -6,6 +6,7 @@ class InfoPanel: public wxPanel {
     public:
         InfoPanel(wxWindow* parent, wxPoint pos, wxSize size);
         void SetStake(const std::string&);
+        void SetStake(int);
         void SetId(unsigned int);
         unsigned int GetId() const;
         virtual void Arrange() = 0;

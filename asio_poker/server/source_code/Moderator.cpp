@@ -1,5 +1,7 @@
 #include "../include/Moderator.hpp"
 #include "../include/UdpServer.hpp"
+#include "../poker_engine/omp/HandEvaluator.h"
+using namespace omp;
 Moderator::Moderator(UdpServer* _parent): croupier(std::make_unique<Croupier>()), currentStage(Stage::PRE_FLOP_STAGE), parent(_parent) {
 }
 
@@ -86,6 +88,7 @@ void Moderator::SetUpNextStage() {
         gm.whoCalledRaise = 0;
         gm.startIndex = GetFirstAliveIndex();
         //currentStage = currentStage +1;
+        std::vector<int> winners;
         currentStage = static_cast<Stage>(static_cast<int>(currentStage) + 1);
         switch(currentStage) {
             case FLOP_STAGE:
@@ -98,15 +101,80 @@ void Moderator::SetUpNextStage() {
                 parent->SendRiverCard();
                 break;
             case END_GAME:
+                //winners = GetWinners();
+                //parent->Send
                 break;
             default:
                 break;
         }
     }
 }
-
 void Moderator::EndGame() {
 
+}
+//std::vector<int> Moderator::GetWinners() const {
+//    auto survivors = FetchAllAlivePlayers();
+//    struct winnerMetadata {
+//        int winnerId = 0;
+//        int winnerScore = 0;
+//        std::vector<int> winnersIds;
+//    };
+//    struct winnerMetadata wm;
+//    HandEvaluator eval;
+//    auto sharedCards = CardsToVector();
+//    for(const auto& survivor: survivors) {
+//        Hand h = Hand::empty();
+//        auto pocketCards = survivor->GetPockedCards();
+//        for(const auto card: sharedCards) h+= Hand(card.toInt());
+//        for(const auto card: pocketCards) h+= Hand(card.toInt());
+//        auto result = eval.evaluate(h);
+//        if(result == wm.winnerScore) {
+//            wm.winnerScore = result;
+//            wm.winnerId = survivor.id;
+//            winnersIds.push_back(survivor->GetId());
+//        }
+//        else if(result > wm.winnerScore) {
+//            wm.winnersIds.clear();
+//            wm.winnersIds.push_back(survivor->GetId());
+//            wm.winnerScore = result;
+//        }
+//    }
+//    return wm.winnersIds;
+//}
+std::vector<int> Moderator::GetWinners() const {
+    auto survivors = FetchAllAlivePlayers();
+
+    struct WinnerMetadata {
+        int winnerScore = 0;
+        std::vector<int> winnersIds;
+    };
+
+    WinnerMetadata wm;
+    HandEvaluator eval;
+    auto sharedCards = CardsToVector();
+
+    for (const auto& survivor : survivors) {
+        Hand h = Hand::empty();
+        auto pocketCards = survivor->GetPocketCards(); // poprawiona literówka
+
+        for (const auto& card : sharedCards)
+            h += Hand(card.toInt());
+
+        for (const auto& card : pocketCards)
+            h += Hand(card.toInt());
+
+        int result = eval.evaluate(h);
+
+        if (result == wm.winnerScore) {
+            wm.winnersIds.push_back(survivor->GetId());
+        }
+        else if (result > wm.winnerScore) {
+            wm.winnerScore = result;
+            wm.winnersIds.clear();
+            wm.winnersIds.push_back(survivor->GetId());
+        }
+    }
+    return wm.winnersIds;
 }
 
 std::vector<Player*> Moderator::FetchAllAlivePlayers() const  {
@@ -159,7 +227,21 @@ void Moderator::UpdatePot(int _dp) {
 int Moderator::GetPot() const {
     return gm.totalPot;
 }
+/*
+ 0 - spades = pik
+1 - hearts - kier
+2 - clubs - trefl
+3 - diamonds - karo
 
-int Moderator::EncodeCard(struct Card &c) const {
-    
+*/
+
+
+std::vector<struct Card> Moderator::CardsToVector() const {
+    std::vector<struct Card> result;
+    if(currentStage >= Stage::FLOP_STAGE) {
+        for(const auto&  card: flopCards) result.push_back(card);
+    }
+    if(currentStage >= Stage::TURN_STAGE) result.push_back(turnCard);
+    if(currentStage >= Stage::RIVER_STAGE) result.push_back(riverCard);
+    return result;
 }

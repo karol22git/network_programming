@@ -1,6 +1,7 @@
 #include "../include/MessagesHandler.hpp"
 #include "../include/EffectManager.hpp"
 #include "../include/DrawingCanvas.hpp"
+#include "../include/GameStage.hpp"
 #include <regex>
 #include <array>
 #include <iostream>
@@ -9,18 +10,21 @@ MessagesHandler::MessagesHandler(): effectManager(new EffectManager()) {}
 void MessagesHandler::ResolveMessage(const std::string& msg) {
     if(msg.find("POCKET_CARDS") != std::string::npos) {
         player->SetPocketCards(ResolvePocketCardsMessage(msg));
-        EffectManager::drawingCanvas->FillPocketCards(ResolvePocketCardsMessage(msg));
+        //EffectManager::drawingCanvas->FillPocketCards(ResolvePocketCardsMessage(msg));
+        EffectManager::gameStage->FillPocketCards(ResolvePocketCardsMessage(msg));
        //for(auto c: ResolvePocketCardsMessage(msg)) debugConsole->LogMessage(resource_dir+c.toString());
 
     }
     else if(msg.find("FLOP") != std::string::npos) {
         std::cout<<"FLOP: "<<msg<<std::endl;
         player->SetFlopCards(ResolveFlopMessage(msg));
-        EffectManager::drawingCanvas->FillFlopCards(ResolveFlopMessage(msg));
+        //EffectManager::drawingCanvas->FillFlopCards(ResolveFlopMessage(msg));
+        EffectManager::gameStage->FillFlopCards(ResolveFlopMessage(msg));
     }
     else if(msg.find("ANOTHER_CARD") != std::string::npos) {
         player->AddExtraCard(ResolveAnotherCardMessage(msg));
-        EffectManager::drawingCanvas->AddAnotherCard(ResolveAnotherCardMessage(msg));
+        //EffectManager::drawingCanvas->AddAnotherCard(ResolveAnotherCardMessage(msg));
+        EffectManager::gameStage->AddAnotherCard(ResolveAnotherCardMessage(msg));
     }
     else if(msg.find("TURN") != std::string::npos) {
         effectManager->HighlightCurrentPlayer(ShellId(msg));

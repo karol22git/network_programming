@@ -27,7 +27,7 @@ void DrawingCanvas::DrawPocketCards(wxGraphicsContext *gc) {
 }
 
 void DrawingCanvas::DrawSharedCards(wxGraphicsContext *gc) {
-    for(unsigned int i = 0 ; i< flop_size +extra_cards_size ; ++i) gc->DrawBitmap(sharedCards[i],i*cardWidth,0,cardWidth,cardHeight);
+    for(unsigned int i = 0 ; i< flop_size + extra_cards_size ; ++i) gc->DrawBitmap(sharedCards[i],i*cardWidth,0,cardWidth,cardHeight);
 }
 //void DrawingCanvas::DrawThePot(wxGraphicsContext *gc) {
 //    //gc->SetTextForeground(*wxBLACK); // Kolor tekstu

@@ -43,7 +43,8 @@ class Moderator {
         void UpdatePot(int);
         int GetPot() const;
         std::vector<Player*> FetchAllAlivePlayers() const;
-        int EncodeCard(struct Card&) const;
+        std::vector<struct Card> CardsToVector() const;
+        std::vector<int> GetWinners() const;
     private:
         std::unique_ptr<Croupier> croupier = nullptr;
         std::vector<Player*> players;

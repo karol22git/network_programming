@@ -50,3 +50,12 @@ void StatusPanel::Arrange() {
     grid->Add(stakeLabel, 0, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL | wxALL, 2);
     grid->Add(stake, 0, wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxALL, 2);
 }
+
+void StatusPanel::SetCardsPanel(PlayerCardsPanel* _cardsPanel) {
+    cardsPanel = _cardsPanel;
+}
+
+void StatusPanel::SetCards(std::array<struct Card, pocket_cards>& cards) {
+    cardsPanel->FillPocketCards(cards);
+    cardsPanel->Refresh();
+}

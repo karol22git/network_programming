@@ -113,7 +113,25 @@ struct Card {
         return col + std::to_string(val);
     }
     int toInt() const {
-        
+        int suite;
+        switch(color) {
+            case pik:
+                suite = 0;
+                break;
+            case kier:
+                suite = 1;
+                break;
+            case trefl:
+                suite = 2;
+                break;
+            case karo:
+                suite = 3;
+                break;
+            default:
+                suite = 0;
+        }
+        auto rank = val -2;
+        return 4*rank + suite;
     }
 };
 
