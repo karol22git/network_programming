@@ -24,10 +24,11 @@ void PlayerCardsPanel::OnPaint(wxPaintEvent &evt) {
 
 void PlayerCardsPanel::PaintRectangles(wxGraphicsContext *gc) {
     gc->SetBrush(*wxTRANSPARENT_BRUSH);
-    gc->SetPen(wxPen(wxColour(0, 0, 0), 2));
+    gc->SetPen(wxPen(*wxGREEN, 2));
     gc->DrawRectangle(0, 0, 2*unit, 3*unit); 
     gc->DrawRectangle(2*unit, 0,2*unit, 3*unit); 
 }
+
 void PlayerCardsPanel::FillStructures() {
     for(unsigned int i  = 0 ; i< pocket_cards ; ++i) pocketCards[i] = cardOtherside;
 }
@@ -36,4 +37,9 @@ void PlayerCardsPanel::DrawPocketCards(wxGraphicsContext *gc) {
     gc->SetBrush(*wxWHITE_BRUSH);
     gc->SetPen(wxPen(*wxBLACK,2));
     for(unsigned int i = 0 ; i< pocket_cards ;++i) gc->DrawBitmap(pocketCards[i],firstCardPosX+i*cardWidth,firstCardPosY,cardWidth,cardHeight);
+}
+
+void PlayerCardsPanel::FillPocketCards(struct Card& c1, struct Card& c2) {
+    pocketCards[0] = FetchCardBitmap(c1.toString());
+    pocketCards[1] = FetchCardBitmap(c2.toString());
 }

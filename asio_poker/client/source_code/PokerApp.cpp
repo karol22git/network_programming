@@ -1,6 +1,6 @@
 #include "../include/PokerApp.hpp"
 #include "../include/DebugConsole.hpp"
-
+#include "../include/EffectManager.hpp"
 bool PokerApp::OnInit() {
     //moderator->GetGraphicsResources();
     wxInitAllImageHandlers();
@@ -8,6 +8,7 @@ bool PokerApp::OnInit() {
     appFrame = new ClientFrame(this);
     player->SetDebugger(new DebugConsole(appFrame));
     appFrame->Show(); 
+    EffectManager::clientFrame = appFrame;
     return true;
 }
 

@@ -39,12 +39,15 @@ class UdpServer {
         void BroadcastTurn();
         void BroadcastMessage(const std::string& msg);
         void BroadcastBlinds();
+        void BroadcastCards();
         Logger* logger = nullptr;
         void SendMessage(const std::string&);
         void SendMessage(const std::string&, udp::endpoint);
         void SendFlop();
         void SendTurnCard();
         void SendRiverCard();
+        void BroadcastWinner(int);
+        void BroadcastWinners(std::vector<int>);
     private:
         //void SendMessage(const std::string&);
         //void SendMessage(const std::string&, udp::endpoint);

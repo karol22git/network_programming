@@ -154,3 +154,23 @@ void UdpServer::SendRiverCard() {
         SendMessage(msg, value.remote_endpoint);
     }
 }
+
+void UdpServer::BroadcastCards() {
+    auto survivors = moderator->FetchAllAlivePlayers();
+    for(const auto& survivor: survivors) {
+        auto cards = survivor->GetPocketCards();
+        auto msg = communicationHandler->GenerateShowCardsMessage(survivor->GetId(),cards[0],cards[1]);
+        for(const auto& [key, value] : players) {
+            SendMessage(msg, value.remote_endpoint);
+        }
+    }
+}
+
+void UdpServer::BroadcastWinner(int _id) {
+    auto msg = communicationHandler->GenerateSoloWinMessage(_id);
+    BroadcastMessage(msg);
+}
+
+void UdpServer::BroadcastWinners(std::vector<int> winners) {
+    
+}

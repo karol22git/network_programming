@@ -4,12 +4,13 @@
 #include "../include/EffectManager.hpp"
 #include "../include/Player.hpp"
 #include "../include/PokerApp.hpp"
-
+#include "../include/EndGameDialog.hpp"
 ClientFrame::ClientFrame(PokerApp * parent) :wxFrame(NULL,wxID_ANY,wxString("Poker"),wxDefaultPosition,wxSize(800,400),wxDEFAULT_FRAME_STYLE & ~wxRESIZE_BORDER), app(parent) {
     CreateItems();
     ArrangeComponent();
     SetSizerAndFit(mainSizer);
     Bind(wxEVT_CLOSE_WINDOW, &ClientFrame::OnClose, this);
+    Bind(wxEVT_SOLO_WIN, &ClientFrame::EndGame, this);
 
 }
 
@@ -37,4 +38,14 @@ void ClientFrame::ArrangeComponent() {
 void ClientFrame::OnClose(wxCloseEvent& event) {
     app->Shutdown(); // wywołaj własną logikę
     event.Skip();    // pozwól wxWidgets kontynuować zamykanie
+}
+
+
+void ClientFrame::EndGame(wxCommandEvent& event) {
+    //EndGameDialog myDialog(this,msg);
+    //myDialog.ShowModal();
+    wxString msg = event.GetString();
+    EndGameDialog* dlg = new EndGameDialog(this, msg.ToStdString());
+    dlg->ShowModal();
+    dlg->Destroy();
 }

@@ -33,6 +33,12 @@ std::string CommunicationHandler::MessageTypeToString(MessageType type)  {
             return "STAKE";
         case 14:
             return "POT";
+        case 15:
+            return "SHOW_CARDS";
+        case 16:
+            return "SOLO_WIN";
+        case 17:
+            return "MULTI_WIN";
         default:
             return "ERROR";
     }
@@ -184,4 +190,29 @@ std::string CommunicationHandler::GeneratePotMessage(int pot) const {
     .SetParams(std::to_string(pot))
     .Build();
     return msg;
+}
+
+std::string CommunicationHandler::GenerateShowCardsMessage(int _id, struct Card& c1, struct Card& c2) const {
+    MessageBuilder mb;
+    auto msg = mb.SetHeader(MessageTypeToString(MessageType::SHOW_CARDS))
+    .SetParams(std::to_string(_id))
+    .SetParams(c1.toString())
+    .SetParams(c2.toString())
+    .Build();
+    return msg;
+}
+
+std::string CommunicationHandler::GenerateSoloWinMessage(int _id) const {
+    MessageBuilder mb;
+    auto msg = mb.SetHeader(MessageTypeToString(MessageType::SOLO_WIN))
+    .SetParams(std::to_string(_id))
+    .Build();
+    return msg;
+}
+
+std::string CommunicationHandler::GenerateMultiWinMessage(std::vector<int> winners) const {
+    MessageBuilder mb;
+    mb = mb.SetHeader(MessageTypeToString(MessageType::MULTI_WIN));
+    for(auto id: winners) mb = mb.SetParams(std::to_string(id));
+    return mb.Build();
 }

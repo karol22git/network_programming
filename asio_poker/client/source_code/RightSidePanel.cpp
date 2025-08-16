@@ -12,6 +12,10 @@ void RightSidePanel::ArrangePanel() {
     playerBCards = new PlayerCardsPanel(handlerPanel,wxPoint(125,60),wxSize(200,126));
     playerStatusPanelA->SetId((Player::GetInstance().GetId() + 1) % 5);
     playerStatusPanelB->SetId((Player::GetInstance().GetId() + 2) % 5);
+    auto playerStatusPanelACasted = dynamic_cast<StatusPanel*>(playerStatusPanelA);
+    auto playerStatusPanelBCasted = dynamic_cast<StatusPanel*>(playerStatusPanelB);
+    playerStatusPanelACasted->SetCardsPanel(playerACards);
+    playerStatusPanelBCasted->SetCardsPanel(playerBCards);
     AddStatusPanelToEffectManager(playerStatusPanelA);
     AddStatusPanelToEffectManager(playerStatusPanelB);
 }

@@ -5,6 +5,7 @@
 #include "StatusBar.hpp"
 #include "InfoPanel.hpp"
 #include "BindPanel.hpp"
+#include <string>
 class PokerApp;
 class ClientFrame: public wxFrame {
     public:
@@ -12,6 +13,7 @@ class ClientFrame: public wxFrame {
         void CreateItems();
         void ArrangeComponent();
         void OnClose(wxCloseEvent& event) ;
+        void EndGame(wxCommandEvent& event);
     private:
         PokerApp* app;
         const int actionPanelWidth = 800;

@@ -8,6 +8,7 @@
 class PlayerCardsPanel: public DrawingCanvasA {
     public:
         PlayerCardsPanel(wxWindow*, wxPoint, wxSize);
+        void FillPocketCards(struct Card& c1, struct Card& c2);
     private:
         void OnPaint(wxPaintEvent &evt) override;
         void FillStructures() override;

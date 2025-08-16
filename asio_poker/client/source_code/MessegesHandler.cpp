@@ -47,6 +47,15 @@ void MessagesHandler::ResolveMessage(const std::string& msg) {
     else if(msg.find("POT") != std::string::npos) {
         ResolvePotMessage(msg);
     }
+    else if(msg.find("SHOW_CARDS") != std::string::npos) {
+        ResolveShowCardsMessage(msg);
+    }
+    else if(msg.find("SOLO_WIN") != std::string::npos) {
+        ResolveSoloWinMessage(msg);
+    }
+    else if(msg.find("MULTI_WIN") != std::string::npos) {
+        ResolveMultiWinMessage(msg);
+    }
 }
 
 std::array<struct Card, pocket_cards> MessagesHandler::ResolvePocketCardsMessage(const std::string& msg) const {
@@ -91,8 +100,6 @@ void MessagesHandler::SetPlayer(Player* p) {
     player = p;
 }
 
-
-
 void MessagesHandler::SetDebugger(DebugConsole* db) {
     debugConsole = db;
 }
@@ -119,7 +126,28 @@ std::vector<std::string> MessagesHandler::GetAllParameters(const std::string& ms
 std::string MessagesHandler::ShellFirstParameter(const std::string& msg) const {
     return LiftCardsOutOfString(msg)[0];
 }
+
 void MessagesHandler::ResolvePotMessage(const std::string& msg) {
     auto newPot = ShellFirstParameter(msg);
     effectManager->SetPot(newPot);
 }   
+
+void MessagesHandler::ResolveShowCardsMessage(const std::string& msg) {
+    auto allParameters = GetAllParameters(msg);
+    int id = std::stoi(allParameters[0]);
+    struct Card c1(allParameters[1]);
+    struct Card c2(allParameters[2]);
+    effectManager->SetCards(id,c1,c2);
+}
+
+void MessagesHandler::ResolveSoloWinMessage(const std::string& msg) {
+    int id = std::stoi(ShellFirstParameter(msg));
+    effectManager->SoloWin(id);
+}
+
+void MessagesHandler::ResolveMultiWinMessage(const std::string& msg) {
+    auto allParameters = GetAllParameters(msg);
+    std::vector<int> ids;
+    for(auto parameter: allParameters) ids.push_back(std::stoi(parameter));
+    effectManager->MultiWin(ids);
+}

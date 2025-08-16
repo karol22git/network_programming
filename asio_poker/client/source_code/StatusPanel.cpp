@@ -56,6 +56,11 @@ void StatusPanel::SetCardsPanel(PlayerCardsPanel* _cardsPanel) {
 }
 
 void StatusPanel::SetCards(std::array<struct Card, pocket_cards>& cards) {
-    cardsPanel->FillPocketCards(cards);
+    //cardsPanel->FillPocketCards(cards);
+    //cardsPanel->Refresh();
+}
+
+void StatusPanel::SetCards(struct Card& c1, struct Card& c2) {
+    cardsPanel->FillPocketCards(c1,c2);
     cardsPanel->Refresh();
 }

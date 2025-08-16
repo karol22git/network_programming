@@ -19,6 +19,9 @@ class MessagesHandler {
         void ResolveAcceptCallMessage(const std::string&);
         void ResolveStakeMessage(const std::string&);
         void ResolvePotMessage(const std::string&);
+        void ResolveShowCardsMessage(const std::string&);
+        void ResolveSoloWinMessage(const std::string&);
+        void ResolveMultiWinMessage(const std::string&);
         std::vector<std::string> GetAllParameters(const std::string& msg) const;
         std::string ShellFirstParameter(const std::string& msg) const;
     private:

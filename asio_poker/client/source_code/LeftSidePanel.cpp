@@ -18,6 +18,10 @@ void LeftSidePanel::ArrangePanel() {
     playerStatusPanelB = new StatusPanel(handlerPanel,wxPoint(125,340),wxSize(200,100),std::to_string(resultRight));
     playerBCards = new PlayerCardsPanel(handlerPanel,wxPoint(123,248),wxSize(200,126));
     playerStatusPanelB->SetId(resultRight);
+    auto playerStatusPanelACasted = dynamic_cast<StatusPanel*>(playerStatusPanelA);
+    auto playerStatusPanelBCasted = dynamic_cast<StatusPanel*>(playerStatusPanelB);
+    playerStatusPanelACasted->SetCardsPanel(playerACards);
+    playerStatusPanelBCasted->SetCardsPanel(playerBCards);
     AddStatusPanelToEffectManager(playerStatusPanelA);
     AddStatusPanelToEffectManager(playerStatusPanelB);
 }

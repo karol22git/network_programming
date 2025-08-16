@@ -9,6 +9,8 @@ class StatusPanel: public InfoPanel{//public wxPanel {
         void CreateItems(const std::string&) override;
         void SetCardsPanel(PlayerCardsPanel* _cardsPanel);
         void SetCards(std::array<struct Card, pocket_cards>&);
+
+        void SetCards(struct Card&, struct Card&);
     private:
         wxStaticText* statusLabel;
         wxStaticText* status;

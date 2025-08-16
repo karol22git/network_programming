@@ -42,6 +42,9 @@ enum MessageType :int {
     ACCEPT_CALL,
     STAKE,
     POT,
+    SHOW_CARDS,
+    SOLO_WIN,
+    MULTI_WIN,
     MSG_ERROR
 };
 
@@ -71,7 +74,10 @@ inline MessageType GetMessageType(const std::string& msg) {
         {"[BIG_BIND]", MessageType::BIG_BIND},
         {"[ACCEPT_CALL]",MessageType::ACCEPT_CALL},
         {"[STAKE]",MessageType::STAKE},
-        {"[POT]",MessageType::POT}
+        {"[POT]",MessageType::POT},
+        {"[SHOW_CARDS]",MessageType::SHOW_CARDS},
+        {"[SOLO_WIN]",MessageType::SOLO_WIN},
+        {"[MULTI_WIN]", MessageType::MULTI_WIN},
     };
 
     for(const auto& [key,value]: tmpMap) {

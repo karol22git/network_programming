@@ -101,6 +101,7 @@ void Moderator::SetUpNextStage() {
                 parent->SendRiverCard();
                 break;
             case END_GAME:
+                parent->BroadcastCards();
                 //winners = GetWinners();
                 //parent->Send
                 break;
@@ -110,7 +111,10 @@ void Moderator::SetUpNextStage() {
     }
 }
 void Moderator::EndGame() {
-
+    parent->BroadcastCards();
+    auto winners = GetWinners();
+    if(winners.size() == 1) parent->BroadcastWinner(winners[0]);
+    else parent->BroadcastWinners(winners);
 }
 //std::vector<int> Moderator::GetWinners() const {
 //    auto survivors = FetchAllAlivePlayers();

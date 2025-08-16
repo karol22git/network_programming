@@ -18,6 +18,9 @@ class CommunicationHandler {
         std::string GenerateAcceptCallMessage(int money) const;
         std::string GenerateStakeMessage(int, int) const;
         std::string GeneratePotMessage(int) const;
+        std::string GenerateShowCardsMessage(int, struct Card& c1, struct Card& c2) const;
+        std::string GenerateSoloWinMessage(int) const;
+        std::string GenerateMultiWinMessage(std::vector<int>) const;
         static std::string GenerateSmallBindMessage() ;
         static std::string GenerateBigBindMessage() ;
         void HandleNormalMessage(const std::string&);
