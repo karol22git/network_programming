@@ -61,6 +61,10 @@ void EffectManager::SwapToSmallBlind() {
 
 }
 
+void EffectManager::SwapToBigBlind() {
+    actionPanel->SetUpBigBlind();
+}
+
 void EffectManager::SetStake(int id, int stake) {
     auto player = GetPlayerById(id);
     player->SetStake(stake);

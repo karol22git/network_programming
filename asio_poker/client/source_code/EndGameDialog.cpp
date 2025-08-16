@@ -7,16 +7,17 @@ EndGameDialog::EndGameDialog(wxWindow* parent, std::string info):
     wxBoxSizer* sizer = new wxBoxSizer(wxVERTICAL);
     sizer->Add(new wxStaticText(this, wxID_ANY, info),0, wxALL | wxEXPAND, 10);
     wxButton* okButton = new wxButton(this, wxID_OK, "Exit");
-    wxButton* cancelButton = new wxButton(this, wxID_CANCEL, "Play again");
-    wxBoxSizer* buttonSizer = new wxBoxSizer(wxHORIZONTAL);
-    buttonSizer->Add(okButton, 1, wxALL, 5);
-    buttonSizer->Add(cancelButton, 1, wxALL, 5);
+   // wxButton* cancelButton = new wxButton(this, wxID_CANCEL, "Play again");
+   // wxBoxSizer* buttonSizer = new wxBoxSizer(wxHORIZONTAL);
+    //buttonSizer->Add(okButton, 1, wxALL, 5);
+    //buttonSizer->Add(cancelButton, 1, wxALL, 5);
     sizer->AddStretchSpacer();
-    sizer->Add(buttonSizer, 0, wxALIGN_CENTER);
+   // sizer->Add(buttonSizer, 0, wxALIGN_CENTER);
+    sizer->Add(okButton,0,wxALIGN_CENTER);
     sizer->AddStretchSpacer();
     SetSizerAndFit(sizer);
     okButton->Bind(wxEVT_BUTTON,&EndGameDialog::DialogExit,this);
-    cancelButton->Bind(wxEVT_BUTTON, &EndGameDialog::DialogContinue, this);
+    //cancelButton->Bind(wxEVT_BUTTON, &EndGameDialog::DialogContinue, this);
     Bind(wxEVT_CLOSE_WINDOW, &EndGameDialog::OnClose, this);
 }
 
@@ -25,13 +26,17 @@ EndGameDialog::EndGameDialog(wxWindow* parent, std::string info):
     //wxWindow* parent = GetParent();
     //parent->Close(true);
     //wxTheApp->Exit();
+    wxWindow* parent = GetParent();
+    parent->Close(true);
+    wxTheApp->Exit();
+    EndModal(wxID_OK);
 }
 
 void EndGameDialog::DialogExit(wxCommandEvent &event){
     wxWindow* parent = GetParent();
-        parent->Close(true);
-        wxTheApp->Exit();
-        EndModal(wxID_OK);
+    parent->Close(true);
+    wxTheApp->Exit();
+    EndModal(wxID_OK);
 }
 
 void EndGameDialog::DialogContinue(wxCommandEvent &event) {

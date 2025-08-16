@@ -21,8 +21,8 @@ class CommunicationHandler {
         std::string GenerateShowCardsMessage(int, struct Card& c1, struct Card& c2) const;
         std::string GenerateSoloWinMessage(int) const;
         std::string GenerateMultiWinMessage(std::vector<int>) const;
-        static std::string GenerateSmallBindMessage() ;
-        static std::string GenerateBigBindMessage() ;
+        static std::string GenerateSmallBindMessage();
+        static std::string GenerateBigBindMessage();
         void HandleNormalMessage(const std::string&);
         void SetModerator(Moderator*);
         void Just();

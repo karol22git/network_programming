@@ -23,6 +23,7 @@ class EffectManager {
         void HighlightCurrentPlayer(const unsigned int);
         void Kill(const unsigned int);
         void SwapToSmallBlind();
+        void SwapToBigBlind();
         void SetStake(int,int);
         void SetPot(const std::string&);
         void SetCards(int, struct Card&, struct Card&);

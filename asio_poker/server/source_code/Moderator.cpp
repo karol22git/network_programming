@@ -80,10 +80,10 @@ bool Moderator::TurnEndCondition() const {
 }
 
 void Moderator::SetUpNextStage() {
-    if(currentStage == Stage::RIVER_STAGE) {
-        EndGame();
-    }
-    else {
+    //if(currentStage == Stage::RIVER_STAGE) {
+    //    EndGame();
+    //}
+    //else {
         gm.didRaiseOccured = false;
         gm.whoCalledRaise = 0;
         gm.startIndex = GetFirstAliveIndex();
@@ -101,14 +101,15 @@ void Moderator::SetUpNextStage() {
                 parent->SendRiverCard();
                 break;
             case END_GAME:
-                parent->BroadcastCards();
+                //parent->BroadcastCards();
                 //winners = GetWinners();
                 //parent->Send
+                EndGame();
                 break;
             default:
                 break;
         }
-    }
+    //}
 }
 void Moderator::EndGame() {
     parent->BroadcastCards();
@@ -202,6 +203,15 @@ void Moderator::Call(const unsigned int _id) {
     players[_id]->Call(gm.stake);
 }
 
+void Moderator::SmallBlind(const unsigned int _id) {
+    gm.stake = small_blind;
+    players[_id]->Call(small_blind);
+}
+void Moderator::BigBlind(const unsigned int _id) {
+    gm.didBigBlindOccured = true;
+    gm.stake = big_blind;
+    players[_id]->Call(big_blind);
+}
 int Moderator::GetStake() const {
     return gm.stake;
 }
@@ -209,7 +219,6 @@ int Moderator::GetStake() const {
 int Moderator::GetNewWalletForPlayer(int id) {
     return players[id]->GetMoneyLeft();
 }
-
 
 void Moderator::FetchExtraCards() {
     turnCard = croupier->GetTurnCard();
@@ -248,4 +257,18 @@ std::vector<struct Card> Moderator::CardsToVector() const {
     if(currentStage >= Stage::TURN_STAGE) result.push_back(turnCard);
     if(currentStage >= Stage::RIVER_STAGE) result.push_back(riverCard);
     return result;
+}
+
+int Moderator::GetLastPlayerId() const {
+    int index = quorum - 1;
+    while(!players[index]->isAlive()) --index;
+    return index;
+}
+
+bool Moderator::didBigBlindOccured() const {
+    return gm.didBigBlindOccured;
+}
+
+bool Moderator::didRaiseOccured() const {
+    return gm.didRaiseOccured;
 }

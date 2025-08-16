@@ -9,8 +9,9 @@ struct GameMetadata {
     int whoCalledRaise = 0;
     int startIndex = 0;
     bool didRaiseOccured = false;
-    int stake = 50;
+    int stake = 0;
     int totalPot = 0;
+    bool didBigBlindOccured = false;
 };
 class UdpServer;
 class Moderator {
@@ -30,11 +31,14 @@ class Moderator {
         int WhoCalledRaise() const;
         void CallRaise(int);
         int GetFirstAliveIndex() const;
+        int GetLastPlayerId() const;
         bool TurnEndCondition() const;
         void SetUpNextStage();
         void EndGame();
         bool CheckIfPlayerHaveEnouhgtMoney(const unsigned int _id) const;
         void Call(const unsigned int);
+        void SmallBlind(const unsigned int);
+        void BigBlind(const unsigned int);
         int GetStake() const;
         int GetNewWalletForPlayer(int);
         struct Card GetTurnCard() const;
@@ -42,6 +46,8 @@ class Moderator {
         void FetchExtraCards();
         void UpdatePot(int);
         int GetPot() const;
+        bool didBigBlindOccured() const;
+        bool didRaiseOccured() const;
         std::vector<Player*> FetchAllAlivePlayers() const;
         std::vector<struct Card> CardsToVector() const;
         std::vector<int> GetWinners() const;

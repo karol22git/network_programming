@@ -35,8 +35,8 @@ void MessagesHandler::ResolveMessage(const std::string& msg) {
     else if(msg.find("SMALL_BLIND") != std::string::npos) {
         effectManager->SwapToSmallBlind();
     }
-    else if(msg.find("BIG_BIND") != std::string::npos) {
-        
+    else if(msg.find("BIG_BLIND") != std::string::npos) {
+        effectManager->SwapToBigBlind();
     }
     else if(msg.find("ACCEPT_CALL") != std::string::npos) {
         ResolveAcceptCallMessage(msg);

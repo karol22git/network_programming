@@ -126,6 +126,18 @@ void UdpServer::SendMessage(const std::string& msg, udp::endpoint endpoint) {
         boost::asio::placeholders::bytes_transferred));
 }
 
+void UdpServer::SendMessage(const std::string& msg, int id) {
+    auto endpointStruct = players[id];
+    auto endpoint = endpointStruct.remote_endpoint;
+    logger->MessageSend(endpoint.address().to_string(), endpoint.port(), msg);
+    auto msg_ptr = std::make_shared<std::string>(msg);
+    socket_.async_send_to(boost::asio::buffer(*msg_ptr), endpoint,
+        std::bind(&UdpServer::handle_send, this, msg_ptr,
+        boost::asio::placeholders::error,
+        boost::asio::placeholders::bytes_transferred));
+}
+
+
 
 void UdpServer::BroadcastMessage(const std::string& msg) {
      for(const auto& [key, value] : players) {

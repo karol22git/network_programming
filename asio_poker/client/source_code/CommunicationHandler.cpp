@@ -79,7 +79,7 @@ std::string CommunicationHandler::GenerateSmallBlindMessage(const unsigned int _
 }
 std::string CommunicationHandler::GenerateBigBlindMessage(const unsigned int _id) const {
  MessageBuilder mb;
-    auto msg = mb.SetHeader(MessageTypeToString(MessageType::BIG_BIND))
+    auto msg = mb.SetHeader(MessageTypeToString(MessageType::BIG_BLIND))
     .SetId(_id)
     .Build();
     return msg;

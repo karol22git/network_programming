@@ -26,7 +26,7 @@ std::string CommunicationHandler::MessageTypeToString(MessageType type)  {
         case 10:
             return "SMALL_BLIND";
         case 11:
-            return "BIG_BIND";
+            return "BIG_BLIND";
         case 12:
             return "ACCEPT_CALL";
         case 13:
@@ -115,7 +115,23 @@ void CommunicationHandler::HandleNormalMessage(const std::string& msg)  {
             parent->BroadcastMessage(GenerateKillMessage(ShellId(msg)));
             break;
         case MessageType::SMALL_BLIND:
+            moderator->SmallBlind(ShellId(msg));
+            moderator->UpdatePot(moderator->GetStake());
             parent->BroadcastMessage(GenerateStakeMessage(ShellId(msg),small_blind));
+            parent->SendMessage(GenerateAcceptCallMessage(moderator->GetNewWalletForPlayer(ShellId(msg))));
+                //parent->BroadcastMessage(GenerateStakeMessage(ShellId(msg),moderator->GetStake()));
+            parent->BroadcastMessage(GeneratePotMessage(moderator->GetPot()));
+            Just();
+            break;
+        case MessageType::BIG_BLIND:
+            moderator->BigBlind(ShellId(msg));
+            moderator->UpdatePot(moderator->GetStake());
+            parent->BroadcastMessage(GenerateStakeMessage(ShellId(msg),small_blind));
+            parent->SendMessage(GenerateAcceptCallMessage(moderator->GetNewWalletForPlayer(ShellId(msg))));
+                //parent->BroadcastMessage(GenerateStakeMessage(ShellId(msg),moderator->GetStake()));
+            parent->BroadcastMessage(GeneratePotMessage(moderator->GetPot()));
+            Just();
+            break;
         default:
             break;
     }
@@ -130,6 +146,11 @@ void CommunicationHandler::SetModerator(Moderator* _moderator) {
 
 void CommunicationHandler::Just() {
     parent->BroadcastTurn();
+    if(moderator->FetchStage() == Stage::PRE_FLOP_STAGE && !moderator->didBigBlindOccured() && !moderator->didRaiseOccured()) {
+        if(moderator->CurrentTurn() == moderator->GetLastPlayerId()) {
+            parent->SendMessage(GenerateBigBindMessage(),moderator->CurrentTurn());
+        }
+    }
 }
 
 int CommunicationHandler::ShellId(const std::string& msg) const {
@@ -160,7 +181,7 @@ std::string CommunicationHandler::GenerateSmallBindMessage() {
 
 std::string CommunicationHandler::GenerateBigBindMessage() {
     MessageBuilder mb;
-    auto msg = mb.SetHeader(MessageTypeToString(MessageType::BIG_BIND))
+    auto msg = mb.SetHeader(MessageTypeToString(MessageType::BIG_BLIND))
     .SetParams(std::to_string(quorum -1))
     .Build();
     return msg;

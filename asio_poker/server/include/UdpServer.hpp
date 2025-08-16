@@ -43,6 +43,7 @@ class UdpServer {
         Logger* logger = nullptr;
         void SendMessage(const std::string&);
         void SendMessage(const std::string&, udp::endpoint);
+        void SendMessage(const std::string&, int);
         void SendFlop();
         void SendTurnCard();
         void SendRiverCard();
