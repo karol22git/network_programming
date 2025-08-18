@@ -39,6 +39,8 @@ std::string CommunicationHandler::MessageTypeToString(MessageType type)  {
             return "SOLO_WIN";
         case 17:
             return "MULTI_WIN";
+        case 18: 
+            return "ACCEPT_RAISE";
         default:
             return "ERROR";
     }
@@ -80,10 +82,22 @@ void CommunicationHandler::HandleNormalMessage(const std::string& msg)  {
     MessageType msgType = GetMessageType(msg);
     int messageAutorId = ShellId(msg);
     bool myCondition;
+    int id;
+    std::vector<std::string> parameters;
     if(msgType != MessageType::FORCED && messageAutorId != moderator->CurrentTurn()) return;
     switch(msgType) {
         case MessageType::RAISE:
-
+            id = ShellId(msg);
+            parameters = GetAllParameters(msg);
+            parent->logger->SimpleLog("tutaj");
+            if(moderator->CheckIfRaiseIsPossible(id,std::stoi(parameters[0]))) {
+                parent->logger->SimpleLog("tutaj2");
+                moderator->Raise(id,std::stoi(parameters[0]));
+                parent->SendMessage(GenerateAcceptRaiseMessage(moderator->GetNewWalletForPlayer(ShellId(msg))));
+                parent->BroadcastMessage(GenerateStakeMessage(ShellId(msg),moderator->GetStake()));
+                parent->BroadcastMessage(GeneratePotMessage(moderator->GetPot()));
+                Just();
+            }
             break;
         case MessageType::CALL:
             if(CheckIfCallEvenPossible(ShellId(msg))) {
@@ -108,11 +122,13 @@ void CommunicationHandler::HandleNormalMessage(const std::string& msg)  {
             break;
         case MessageType::MSG_EXIT:
             moderator->Kill(ShellId(msg));
+            moderator->CheckForShutdown();
             break;
         case MessageType::FORCED:
             if(messageAutorId == moderator->CurrentTurn())moderator->WhosTurn();
             moderator->Kill(ShellId(msg));
             parent->BroadcastMessage(GenerateKillMessage(ShellId(msg)));
+            moderator->CheckForShutdown();
             break;
         case MessageType::SMALL_BLIND:
             moderator->SmallBlind(ShellId(msg));
@@ -140,12 +156,14 @@ void CommunicationHandler::HandleNormalMessage(const std::string& msg)  {
 bool CommunicationHandler::CheckIfCallEvenPossible(const unsigned int _id) const {
     return moderator->CheckIfPlayerHaveEnouhgtMoney(_id);
 }
+
 void CommunicationHandler::SetModerator(Moderator* _moderator) {
     moderator = _moderator;
 }
 
 void CommunicationHandler::Just() {
     parent->BroadcastTurn();
+    parent->BroadcastMessage(GenerateStakeMessage(moderator->CurrentTurn(),moderator->GetStake()));
     if(moderator->FetchStage() == Stage::PRE_FLOP_STAGE && !moderator->didBigBlindOccured() && !moderator->didRaiseOccured()) {
         if(moderator->CurrentTurn() == moderator->GetLastPlayerId()) {
             parent->SendMessage(GenerateBigBindMessage(),moderator->CurrentTurn());
@@ -236,4 +254,27 @@ std::string CommunicationHandler::GenerateMultiWinMessage(std::vector<int> winne
     mb = mb.SetHeader(MessageTypeToString(MessageType::MULTI_WIN));
     for(auto id: winners) mb = mb.SetParams(std::to_string(id));
     return mb.Build();
+}
+
+std::vector<std::string> CommunicationHandler::GetAllParameters(const std::string& msg) const {
+    std::vector<std::string> result;
+    std::regex pattern("\\{([^}]*)\\}");
+    std::smatch match;
+    std::string::const_iterator start = msg.begin();
+    std::string::const_iterator end = msg.end();
+    unsigned int index = 0;
+    while (std::regex_search(start, end, match, pattern)) {
+        //std::cout << "Znaleziono: " << match[1] << std::endl;
+        result.push_back(match[1]);
+        start = match[0].second;
+    }
+    return result;
+}
+
+std::string CommunicationHandler::GenerateAcceptRaiseMessage(int money) const {
+    MessageBuilder mb;
+    auto msg = mb.SetHeader(MessageTypeToString(MessageType::ACCEPT_RAISE))
+    .SetParams(std::to_string(money))
+    .Build();
+    return msg;
 }

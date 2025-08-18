@@ -56,6 +56,9 @@ void MessagesHandler::ResolveMessage(const std::string& msg) {
     else if(msg.find("MULTI_WIN") != std::string::npos) {
         ResolveMultiWinMessage(msg);
     }
+    else if(msg.find("ACCEPT_RAISE") != std::string::npos) {
+        ResolveAcceptRaiseMessage(msg);
+    }
 }
 
 std::array<struct Card, pocket_cards> MessagesHandler::ResolvePocketCardsMessage(const std::string& msg) const {
@@ -150,4 +153,8 @@ void MessagesHandler::ResolveMultiWinMessage(const std::string& msg) {
     std::vector<int> ids;
     for(auto parameter: allParameters) ids.push_back(std::stoi(parameter));
     effectManager->MultiWin(ids);
+}
+
+void MessagesHandler::ResolveAcceptRaiseMessage(const std::string& msg) {
+    player->SetMoneyLeft(ShellId(msg));
 }

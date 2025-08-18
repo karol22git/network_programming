@@ -45,6 +45,7 @@ enum MessageType :int {
     SHOW_CARDS,
     SOLO_WIN,
     MULTI_WIN,
+    ACCEPT_RAISE,
     MSG_ERROR
 };
 
@@ -78,6 +79,7 @@ inline MessageType GetMessageType(const std::string& msg) {
         {"[SHOW_CARDS]",MessageType::SHOW_CARDS},
         {"[SOLO_WIN]",MessageType::SOLO_WIN},
         {"[MULTI_WIN]", MessageType::MULTI_WIN},
+        {"[ACCEPT_RAISE]",MessageType::ACCEPT_RAISE}
     };
 
     for(const auto& [key,value]: tmpMap) {

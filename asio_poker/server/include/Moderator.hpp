@@ -51,6 +51,10 @@ class Moderator {
         std::vector<Player*> FetchAllAlivePlayers() const;
         std::vector<struct Card> CardsToVector() const;
         std::vector<int> GetWinners() const;
+        void CheckForShutdown();
+        bool areAllPlayersDead() const;
+        bool CheckIfRaiseIsPossible(int, int) const;
+        void Raise(int, int);
     private:
         std::unique_ptr<Croupier> croupier = nullptr;
         std::vector<Player*> players;

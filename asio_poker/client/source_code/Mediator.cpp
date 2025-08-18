@@ -38,7 +38,8 @@ void Mediator::Pass(wxCommandEvent& event) {
 }
 
 void Mediator::Raise(wxCommandEvent& event) {
-    auto msg = communicationHandler->GenerateRaiseMessage(Player::GetInstance().GetId(),100);
+    auto amount = actionPanel->ReadUserInput();
+    auto msg = communicationHandler->GenerateRaiseMessage(Player::GetInstance().GetId(),std::stoi(amount));
     client->SendMessage(msg);
 }
 

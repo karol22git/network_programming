@@ -272,3 +272,30 @@ bool Moderator::didBigBlindOccured() const {
 bool Moderator::didRaiseOccured() const {
     return gm.didRaiseOccured;
 }
+
+void Moderator::CheckForShutdown() {
+    if (currentStage != Stage::END_GAME) return;
+    if (areAllPlayersDead()) exit(0);
+}
+
+bool Moderator::areAllPlayersDead() const {
+    for(auto player: players) {
+        if(player->isAlive()) return false;
+    }
+    return true;
+}
+
+bool Moderator::CheckIfRaiseIsPossible(int _id, int amount) const {
+    return players[_id]->GetMoneyLeft() > amount;
+}
+
+void Moderator::Raise(int _id, int amount) {
+    auto player = players[_id];
+    player->SetMoneyLeft(player->GetMoneyLeft() - amount);
+    gm.stake = amount;
+    UpdatePot(amount);
+    gm.didRaiseOccured = true;
+    gm.didBigBlindOccured = true;
+    gm.whoCalledRaise = _id;
+    gm.startIndex = _id;
+}

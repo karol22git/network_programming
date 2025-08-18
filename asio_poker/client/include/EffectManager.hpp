@@ -29,6 +29,7 @@ class EffectManager {
         void SetCards(int, struct Card&, struct Card&);
         void SoloWin(int);
         void MultiWin(std::vector<int>);
+        void UpdatePocket(int);
         static DrawingCanvas* drawingCanvas;
         static std::vector<InfoPanel*> players;
         static ActionPanel* actionPanel;

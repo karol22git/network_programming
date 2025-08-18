@@ -17,6 +17,7 @@ class ActionPanel: public wxPanel {
        void SetUpBigBlind();
        void HideMiniSizer();
        void Rearrange();
+       std::string ReadUserInput();
     private:
         BlindStakePanel* bigBlindStake;
         BlindStakePanel* smallBlindStake;

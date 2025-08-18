@@ -103,3 +103,7 @@ void EffectManager::SoloWin(int _id) {
 void EffectManager::MultiWin(std::vector<int> ids) {
 
 }
+
+void EffectManager::UpdatePocket(int amount) {
+    statusBar->SetWallet(amount);
+}

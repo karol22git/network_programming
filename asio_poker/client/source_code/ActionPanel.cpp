@@ -64,6 +64,10 @@ wxButton* ActionPanel::GetPassButton() const {
     return passButton;
 }
 
+std::string ActionPanel::ReadUserInput() {
+    return std::string(textCtrl->GetValue());
+}
+
 void ActionPanel::HideAll() {
     actionPanelSizer->ShowItems(false);
 }

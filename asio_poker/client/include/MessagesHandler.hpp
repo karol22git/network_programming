@@ -22,6 +22,7 @@ class MessagesHandler {
         void ResolveShowCardsMessage(const std::string&);
         void ResolveSoloWinMessage(const std::string&);
         void ResolveMultiWinMessage(const std::string&);
+        void ResolveAcceptRaiseMessage(const std::string&);
         std::vector<std::string> GetAllParameters(const std::string& msg) const;
         std::string ShellFirstParameter(const std::string& msg) const;
     private:

@@ -10,7 +10,7 @@ std::string CommunicationHandler::MessageTypeToString(MessageType type) const {
         case 3:
             return "ANOTHER_CARD";
         case 4: 
-            return "RAISE";
+            return "[RAISE]";
         case 5:
             return "[CALL]";
         case 6:
