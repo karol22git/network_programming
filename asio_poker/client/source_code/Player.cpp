@@ -29,7 +29,6 @@ void Player::AddExtraCard(const struct Card& c) {
 }
 
 Player& Player::GetInstance() {
-    //static Player instance(id);
     return *instance;
 }
 

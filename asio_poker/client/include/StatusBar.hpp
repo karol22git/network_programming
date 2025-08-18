@@ -13,4 +13,11 @@ class StatusBar: public InfoPanel{//public wxPanel {
         wxStaticText* wallet;
         wxStaticText* potLabel;
         wxStaticText* pot;
+        //const int labelFlag = wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL | wxALL;
+        //const int flag = wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxALL;
+        //const int margin = 2;
+        const std::string usernameString = "Username: ";
+        const std::string walletString = "Youre wallet: ";
+        const std::string stakeString = "Current stake: ";
+        const std::string potString = "Total pot: ";
 };

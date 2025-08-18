@@ -17,8 +17,6 @@ wxDECLARE_EVENT(wxEVT_SOLO_WIN, wxCommandEvent);
 class EffectManager {
     public:
         EffectManager();
-        //void DrawingCanvasEffect();
-        //void GameManagmantEffect();
         void UpdateCurrentStake(const std::string&);
         void HighlightCurrentPlayer(const unsigned int);
         void Kill(const unsigned int);

@@ -21,7 +21,6 @@ void ClientFrame::CreateItems() {
     statusBar = new StatusBar(this,wxDefaultPosition, wxSize(statusBarWidth,statusBarHeight), "hello");
     statusBar->SetId(Player::GetInstance().GetId());
     helperSizer = new wxBoxSizer(wxHORIZONTAL);
-    //bindPanel = new BindPanel(this,wxSize(actionPanelWidth,actionPanelHeight),"small bind","20");
     EffectManager::players.push_back(statusBar);
     EffectManager::statusBar = dynamic_cast<StatusBar*>(statusBar);
     EffectManager::actionPanel = actionPanel;
@@ -31,19 +30,16 @@ void ClientFrame::ArrangeComponent() {
     mainSizer->Add(gp,0, wxALL, margin);
     helperSizer->Add(statusBar,0,wxALL,margin);
     helperSizer->Add(actionPanel,0,wxALL,margin);
-    //helperSizer->Add(bindPanel,0,wxALL,margin);
     mainSizer->Add(helperSizer,0, wxALL, margin);
 }
 
 void ClientFrame::OnClose(wxCloseEvent& event) {
-    app->Shutdown(); // wywołaj własną logikę
-    event.Skip();    // pozwól wxWidgets kontynuować zamykanie
+    app->Shutdown();
+    event.Skip();
 }
 
 
 void ClientFrame::EndGame(wxCommandEvent& event) {
-    //EndGameDialog myDialog(this,msg);
-    //myDialog.ShowModal();
     wxString msg = event.GetString();
     EndGameDialog* dlg = new EndGameDialog(this, msg.ToStdString());
     dlg->ShowModal();

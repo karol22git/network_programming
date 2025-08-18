@@ -89,11 +89,6 @@ void EffectManager::SoloWin(int _id) {
     else {
         msg = "Player with id: " + std::to_string(_id) + " won.";
     }
-    //wxCallAfter([msg, this] {
-    //    EndGameDialog* dlg = new EndGameDialog(this->clientFrame, msg);
-    //    dlg->ShowModal();
-    //    dlg->Destroy(); 
-    //});
     wxCommandEvent evt(wxEVT_SOLO_WIN);
     evt.SetString(msg);  // przekazujemy wiadomość
     clientFrame->GetEventHandler()->AddPendingEvent(evt);

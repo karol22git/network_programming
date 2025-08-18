@@ -24,8 +24,6 @@ class UdpClient{
             std::size_t bytes_transferred);
         void SendForcedExitMessage();
     private:
-        //boost::asio::io_context io_context;
-        //static DebugConsole* debugConsole ;
         std::array<char,128> recv_buffer_;
         udp::resolver resolver_;
         udp::socket socket_;

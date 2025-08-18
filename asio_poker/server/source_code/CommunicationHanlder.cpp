@@ -89,9 +89,7 @@ void CommunicationHandler::HandleNormalMessage(const std::string& msg)  {
         case MessageType::RAISE:
             id = ShellId(msg);
             parameters = GetAllParameters(msg);
-            parent->logger->SimpleLog("tutaj");
             if(moderator->CheckIfRaiseIsPossible(id,std::stoi(parameters[0]))) {
-                parent->logger->SimpleLog("tutaj2");
                 moderator->Raise(id,std::stoi(parameters[0]));
                 parent->SendMessage(GenerateAcceptRaiseMessage(moderator->GetNewWalletForPlayer(ShellId(msg))));
                 parent->BroadcastMessage(GenerateStakeMessage(ShellId(msg),moderator->GetStake()));
@@ -103,7 +101,6 @@ void CommunicationHandler::HandleNormalMessage(const std::string& msg)  {
             if(CheckIfCallEvenPossible(ShellId(msg))) {
                 moderator->Call(ShellId(msg));
                 moderator->UpdatePot(moderator->GetStake());
-                //parent->logger->SimpleLog("Moge zrobic call");
                 parent->SendMessage(GenerateAcceptCallMessage(moderator->GetNewWalletForPlayer(ShellId(msg))));
                 parent->BroadcastMessage(GenerateStakeMessage(ShellId(msg),moderator->GetStake()));
                 parent->BroadcastMessage(GeneratePotMessage(moderator->GetPot()));

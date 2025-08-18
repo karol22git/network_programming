@@ -29,11 +29,7 @@ void DrawingCanvas::DrawPocketCards(wxGraphicsContext *gc) {
 void DrawingCanvas::DrawSharedCards(wxGraphicsContext *gc) {
     for(unsigned int i = 0 ; i< flop_size + extra_cards_size ; ++i) gc->DrawBitmap(sharedCards[i],i*cardWidth,0,cardWidth,cardHeight);
 }
-//void DrawingCanvas::DrawThePot(wxGraphicsContext *gc) {
-//    //gc->SetTextForeground(*wxBLACK); // Kolor tekstu
-//    gc->SetFont(wxFontInfo(14).Bold(), *wxBLACK);
-//    gc->DrawText("Witaj w wxWidgets!", wxPoint(50, 50)); // Pozycja tekstu
-//}
+
 void DrawingCanvas::FillStructures() {
     for(unsigned int i = 0 ; i < flop_size +extra_cards_size ; ++i) sharedCards[i] = cardOtherside;
     for(unsigned int i  = 0 ; i< pocket_cards ; ++i) pocketCards[i] = cardOtherside;
@@ -41,7 +37,6 @@ void DrawingCanvas::FillStructures() {
 
 void DrawingCanvas::LoadBasicTemplate() {
     wxImage image;
-    //image.LoadFile("../resources/back.png", wxBITMAP_TYPE_ANY);
     image.LoadFile(resource_dir+ otherside_card_file, wxBITMAP_TYPE_ANY);
     cardOtherside = wxBitmap(image);
 }

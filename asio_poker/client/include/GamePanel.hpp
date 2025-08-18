@@ -19,5 +19,4 @@ class GamePanel: public wxPanel {
         const int margin = 5;
         SidePanel* leftPanel;
         SidePanel* rightPanel;
-        //wxPanel* gameWindow;
 };  

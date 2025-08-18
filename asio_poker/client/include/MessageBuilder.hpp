@@ -11,6 +11,5 @@ class MessageBuilder {
     private:
         std::string header;
         std::string id;
-        //std::string params;
         std::vector<std::string> params;
 };

@@ -10,7 +10,6 @@ class ActionPanel: public wxPanel {
         wxButton* GetPassButton() const;
         wxButton* GetBigBlindButton() const;
         wxButton* GetSmallBlindButton() const;
-       // void CreateSmallBlindPanel();
        void HideAll();
        void ShowAll();
        void SetUpSmallBlind();
@@ -40,4 +39,10 @@ class ActionPanel: public wxPanel {
         void CreateBlindsPanels();
         void HideButtons();
         CommunicationHandler* communicationHandler;
+        const std::string passString = "Pass";
+        const std::string raiseString = "Raise";
+        const std::string callString = "Call";
+        const std::string smallBlindString = "small blind";
+        const std::string blindText = "....";
+        const std::string stakeString = "stake:";
 };

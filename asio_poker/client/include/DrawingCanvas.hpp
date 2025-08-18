@@ -24,12 +24,8 @@ class DrawingCanvas: public wxPanel {
         void OnPaint(wxPaintEvent &evt);
         void DrawPocketCards(wxGraphicsContext *gc);
         void DrawSharedCards(wxGraphicsContext *gc);
-        //void DrawThePot(wxGraphicsContext *gc);
         void FillStructures();
         void LoadBasicTemplate();
-        //void FillPocketCards(const std::array<struct Card, pocket_cards>&);
-        //void FillFlopCards(const std::array<struct Card, flop_size>&);
-        //void AddAnotherCard(const struct Card);
         wxBitmap FetchCardBitmap(const std::string&);
         std::array<wxBitmap, pocket_cards> pocketCards = {};
         std::array<wxBitmap, flop_size + extra_cards_size> sharedCards = {};

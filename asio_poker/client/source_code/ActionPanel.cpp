@@ -16,39 +16,30 @@ ActionPanel::ActionPanel(wxWindow* parent, wxSize size) : wxPanel(parent,wxID_AN
     Mediator::GetInstance().SetActionPanel(this);
     placeholder = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxSize(50,50));
     placeholder->Hide();
-    
-   //actionPanelSizer->Add(bigBlindStake);
-    //SetUpSmallBlind();
 }
 
 void ActionPanel::CreateButtons() {
-    passButton = new wxButton(this, wxID_ANY, "Pass",wxDefaultPosition,wxSize(150,50));
-    raiseButton = new wxButton(this, wxID_ANY, "Raise",wxDefaultPosition,wxSize(150,50));
-    callButton = new wxButton(this, wxID_ANY, "Call",wxDefaultPosition,wxSize(150,50));
-    blindButton = new wxButton(this, wxID_ANY, "small blind",wxDefaultPosition,wxSize(150,50));
+    passButton = new wxButton(this, wxID_ANY, passString,wxDefaultPosition,wxSize(150,50));
+    raiseButton = new wxButton(this, wxID_ANY, raiseString,wxDefaultPosition,wxSize(150,50));
+    callButton = new wxButton(this, wxID_ANY, callString ,wxDefaultPosition,wxSize(150,50));
+    blindButton = new wxButton(this, wxID_ANY, smallBlindString,wxDefaultPosition,wxSize(150,50));
     blindButton->Hide();
 }
 
 void ActionPanel::CreateInfoField() {
     textCtrl = new wxTextCtrl(this, wxID_ANY,"",wxDefaultPosition, wxSize(150,20));
-    //blindInfoField = new wxStaticText(this, wxID_ANY, std::to_string(small_blind), wxDefaultPosition, wxSize(60, 30), wxST_NO_AUTORESIZE);
-    blindTextCtrl = new wxTextCtrl(this, wxID_ANY, "ssss", wxDefaultPosition, wxSize(50, 30), wxTE_READONLY);
+    blindTextCtrl = new wxTextCtrl(this, wxID_ANY, blindText, wxDefaultPosition, wxSize(50, 30), wxTE_READONLY);
     blindTextCtrl->Hide();
-    blindLabel  = new wxStaticText(this, wxID_ANY, "stake: ",wxDefaultPosition, wxSize(20,30));
+    blindLabel  = new wxStaticText(this, wxID_ANY, stakeString,wxDefaultPosition, wxSize(20,30));
     blindLabel->Hide();
-   //blindInfoField->Hide();
 }
 
 void ActionPanel::ArrangeSizer() {
-    //actionPanelSizer =  new wxStaticBoxSizer(wxHORIZONTAL,this, "Actions");
-    //miniSizer = new wxBoxSizer(wxVERTICAL);
     actionPanelSizer->Add(passButton,0,wxALL,10);
     miniSizer->Add(textCtrl);
     miniSizer->Add(raiseButton);
     actionPanelSizer->Add(miniSizer,0,wxALL,10);
     actionPanelSizer->Add(callButton,0,wxALL,10);
-    //actionPanelSizer->Add(smallBlindStake,0,wxALL,10);
-    //actionPanelSizer->Add(bigBlindStake,0,wxALL,10);
 }
 
 
@@ -83,9 +74,7 @@ void ActionPanel::SetUpSmallBlind() {
     HideButtons();
     HideMiniSizer();
     actionPanelSizer->Detach(miniSizer);
-    //placeholder->Show();
     smallBlindStake->Show();
-    //actionPanelSizer->Add(placeholder,0, wxALIGN_CENTER | wxTOP | wxBOTTOM, 10);
     actionPanelSizer->Add(smallBlindStake,1, wxALIGN_CENTER | wxTOP | wxBOTTOM, 10);
     Layout();
 
@@ -95,9 +84,7 @@ void ActionPanel::SetUpBigBlind() {
     HideButtons();
     HideMiniSizer();
     actionPanelSizer->Detach(miniSizer);
-    //placeholder->Show();
     bigBlindStake->Show();
-    //actionPanelSizer->Add(placeholder,0, wxALIGN_CENTER | wxTOP | wxBOTTOM, 10);
     actionPanelSizer->Add(bigBlindStake,1, wxALIGN_CENTER | wxTOP | wxBOTTOM, 10);
     Layout();
 }

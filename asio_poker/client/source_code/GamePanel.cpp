@@ -12,10 +12,7 @@ void GamePanel::CreateItems() {
     middleSizer = new wxBoxSizer(wxVERTICAL);
     leftPanel = new LeftSidePanel(this,sidePanelSize);
     rightPanel = new RightSidePanel(this,sidePanelSize);
-    //gameWindow = new wxPanel(this,wxID_ANY,wxDefaultPosition,wxSize(350,200));
-    //gameWindow = new DrawingCanvas(this,wxID_ANY,wxDefaultPosition,wxSize(350,200));
     mainGameStage = new GameStage(this,wxDefaultPosition,wxSize(350,200));
-    //EffectManager::drawingCanvas = gameWindow;
     EffectManager::gameStage = mainGameStage;
 }
 

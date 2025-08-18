@@ -80,14 +80,9 @@ bool Moderator::TurnEndCondition() const {
 }
 
 void Moderator::SetUpNextStage() {
-    //if(currentStage == Stage::RIVER_STAGE) {
-    //    EndGame();
-    //}
-    //else {
         gm.didRaiseOccured = false;
         gm.whoCalledRaise = 0;
         gm.startIndex = GetFirstAliveIndex();
-        //currentStage = currentStage +1;
         std::vector<int> winners;
         currentStage = static_cast<Stage>(static_cast<int>(currentStage) + 1);
         switch(currentStage) {
@@ -101,9 +96,6 @@ void Moderator::SetUpNextStage() {
                 parent->SendRiverCard();
                 break;
             case END_GAME:
-                //parent->BroadcastCards();
-                //winners = GetWinners();
-                //parent->Send
                 EndGame();
                 break;
             default:
@@ -117,35 +109,6 @@ void Moderator::EndGame() {
     if(winners.size() == 1) parent->BroadcastWinner(winners[0]);
     else parent->BroadcastWinners(winners);
 }
-//std::vector<int> Moderator::GetWinners() const {
-//    auto survivors = FetchAllAlivePlayers();
-//    struct winnerMetadata {
-//        int winnerId = 0;
-//        int winnerScore = 0;
-//        std::vector<int> winnersIds;
-//    };
-//    struct winnerMetadata wm;
-//    HandEvaluator eval;
-//    auto sharedCards = CardsToVector();
-//    for(const auto& survivor: survivors) {
-//        Hand h = Hand::empty();
-//        auto pocketCards = survivor->GetPockedCards();
-//        for(const auto card: sharedCards) h+= Hand(card.toInt());
-//        for(const auto card: pocketCards) h+= Hand(card.toInt());
-//        auto result = eval.evaluate(h);
-//        if(result == wm.winnerScore) {
-//            wm.winnerScore = result;
-//            wm.winnerId = survivor.id;
-//            winnersIds.push_back(survivor->GetId());
-//        }
-//        else if(result > wm.winnerScore) {
-//            wm.winnersIds.clear();
-//            wm.winnersIds.push_back(survivor->GetId());
-//            wm.winnerScore = result;
-//        }
-//    }
-//    return wm.winnersIds;
-//}
 std::vector<int> Moderator::GetWinners() const {
     auto survivors = FetchAllAlivePlayers();
 
@@ -160,7 +123,7 @@ std::vector<int> Moderator::GetWinners() const {
 
     for (const auto& survivor : survivors) {
         Hand h = Hand::empty();
-        auto pocketCards = survivor->GetPocketCards(); // poprawiona literówka
+        auto pocketCards = survivor->GetPocketCards(); 
 
         for (const auto& card : sharedCards)
             h += Hand(card.toInt());

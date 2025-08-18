@@ -2,15 +2,10 @@
 
 DrawingCanvasA::DrawingCanvasA(wxWindow* parent, wxPoint pos, wxSize size) :
     wxPanel(parent, wxID_ANY, pos, size) {
-        //this->SetBackgroundStyle(wxBG_STYLE_PAINT);
-        //this->Bind(wxEVT_PAINT, &DrawingCanvasA::OnPaint, this);
-        //LoadBasicTemplate();
-        //FillStructures();
     }
 
 void DrawingCanvasA::LoadBasicTemplate() {
     wxImage image;
-    //image.LoadFile("../resources/back.png", wxBITMAP_TYPE_ANY);
     image.LoadFile(resource_dir+ otherside_card_file, wxBITMAP_TYPE_ANY);
     cardOtherside = wxBitmap(image);
 }

@@ -16,4 +16,10 @@ class SidePanel: public wxPanel {
         PlayerCardsPanel* playerACards;
         PlayerCardsPanel* playerBCards;
         wxPanel *handlerPanel;
+
+        const unsigned int playerStatsPanelWidth = 200;
+        const unsigned int playerStatusPanelHeight = 100;
+        const unsigned int playerCardsPanelHeight = 126;
+        const unsigned int margin = 5;
+        const unsigned int step = 1;
 };

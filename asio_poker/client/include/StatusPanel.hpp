@@ -15,4 +15,8 @@ class StatusPanel: public InfoPanel{//public wxPanel {
         wxStaticText* statusLabel;
         wxStaticText* status;
         PlayerCardsPanel* cardsPanel;
+        const std::string nicknameString = "Nickname:";
+        const std::string statusString = "Status:";
+        const std::string stakeString = "Stake:";
+        const std::string ingameString = "in game";
 };

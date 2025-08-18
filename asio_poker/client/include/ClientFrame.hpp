@@ -26,7 +26,5 @@ class ClientFrame: public wxFrame {
         GamePanel* gp;
         ActionPanel* actionPanel;
         BindPanel* bindPanel;
-
-       // StatusBar* statusBar;
        InfoPanel* statusBar;
 };

@@ -8,4 +8,10 @@ class EndGameDialog: public wxDialog {
         void OnClose(wxCloseEvent& event);
         void DialogExit(wxCommandEvent &event);
         void DialogContinue(wxCommandEvent &event);
+
+        const std::string title = "Attention.";
+        const std::string buttonLabel = "Exit";
+        const unsigned int margin = 10;
+        const unsigned int dialogWidth = 300;
+        const unsigned int dialogHeight = 150;
 };

@@ -16,15 +16,13 @@ void Croupier::GenerateDeck() {
 }
 
 std::array<struct Card, 2> Croupier::GetPocketCards() {
-    //std::cout<<"tut"<<std::endl; 
     std::array<struct Card, 2> result;
     for(auto i: {0,1}) {
         auto a = dist(gen,decltype(dist)::param_type(0,deck_size - usedCards-1));
         result[i] = deck[a];
         Swap(a,deck_size -usedCards-1);
         ++usedCards;
-    }
-//std::cout<<"tut"<<std::endl;    
+    }    
     return result;
 }
 

@@ -11,5 +11,8 @@ class Logger {
         
     private:
         std::string newConnection = "new player connected";
+        const std::string acceptNewConnectionString = "[LOG] accepted new connection. Ip: ";
+        const std::string messageReceivedString = "[LOG] i received message from ip: ";
+        const std::string messageSendString = "[LOG] i send message to ip: ";
 
 };

@@ -10,20 +10,15 @@ MessagesHandler::MessagesHandler(): effectManager(new EffectManager()) {}
 void MessagesHandler::ResolveMessage(const std::string& msg) {
     if(msg.find("POCKET_CARDS") != std::string::npos) {
         player->SetPocketCards(ResolvePocketCardsMessage(msg));
-        //EffectManager::drawingCanvas->FillPocketCards(ResolvePocketCardsMessage(msg));
         EffectManager::gameStage->FillPocketCards(ResolvePocketCardsMessage(msg));
-       //for(auto c: ResolvePocketCardsMessage(msg)) debugConsole->LogMessage(resource_dir+c.toString());
-
     }
     else if(msg.find("FLOP") != std::string::npos) {
         std::cout<<"FLOP: "<<msg<<std::endl;
         player->SetFlopCards(ResolveFlopMessage(msg));
-        //EffectManager::drawingCanvas->FillFlopCards(ResolveFlopMessage(msg));
         EffectManager::gameStage->FillFlopCards(ResolveFlopMessage(msg));
     }
     else if(msg.find("ANOTHER_CARD") != std::string::npos) {
         player->AddExtraCard(ResolveAnotherCardMessage(msg));
-        //EffectManager::drawingCanvas->AddAnotherCard(ResolveAnotherCardMessage(msg));
         EffectManager::gameStage->AddAnotherCard(ResolveAnotherCardMessage(msg));
     }
     else if(msg.find("TURN") != std::string::npos) {
@@ -87,7 +82,6 @@ std::vector<std::string> MessagesHandler::LiftCardsOutOfString(const std::string
     std::string::const_iterator end = msg.end();
     unsigned int index = 0;
     while (std::regex_search(start, end, match, pattern)) {
-        //std::cout << "Znaleziono: " << match[1] << std::endl;
         result.push_back(match[1]);
         start = match[0].second;
     }
@@ -96,7 +90,6 @@ std::vector<std::string> MessagesHandler::LiftCardsOutOfString(const std::string
 
 int MessagesHandler::ShellId(const std::string& msg) const {
     return std::stoi(LiftCardsOutOfString(msg)[0]);
-    //return 0;
 }
 
 void MessagesHandler::SetPlayer(Player* p) {
@@ -112,7 +105,7 @@ void MessagesHandler::ResolveKillMessage(const std::string& msg) {
 }
 
 void MessagesHandler::ResolveAcceptCallMessage(const std::string& msg) {
-    player->SetMoneyLeft(ShellId(msg));
+    effectManager->UpdatePocket(ShellId(msg));
 }
 
 void MessagesHandler::ResolveStakeMessage(const std::string& msg) {
@@ -156,5 +149,5 @@ void MessagesHandler::ResolveMultiWinMessage(const std::string& msg) {
 }
 
 void MessagesHandler::ResolveAcceptRaiseMessage(const std::string& msg) {
-    player->SetMoneyLeft(ShellId(msg));
+    effectManager->UpdatePocket(ShellId(msg));
 }

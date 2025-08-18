@@ -22,7 +22,6 @@ void GameStage::OnPaint(wxPaintEvent &evt) {
     if(gc) {
         DrawPocketCards(gc);
         DrawSharedCards(gc);
-        //DrawThePot(gc);
     }
     delete gc;
 }

@@ -9,8 +9,6 @@ MessageBuilder& MessageBuilder::SetHeader(const std::string& _header) {
 }
 
 MessageBuilder& MessageBuilder::SetParams(const std::string& _params) {
-    //this->params= _params;
-    //return *this;
     params.push_back(_params);
     return *this;
 }

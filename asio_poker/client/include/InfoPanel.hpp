@@ -18,4 +18,7 @@ class InfoPanel: public wxPanel {
         wxStaticText* stakeLabel;
         wxStaticText* stake;
         unsigned int id;
+        const int labelFlag = wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL | wxALL;
+        const int flag = wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxALL;
+        const int margin = 2;
 };
